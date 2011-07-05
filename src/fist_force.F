@@ -12,6 +12,7 @@
 !> \author CJM & JGH
 ! *****************************************************************************
 MODULE fist_force
+  USE atprop_types,                    ONLY: atprop_type
   USE atomic_kind_types,               ONLY: atomic_kind_type,&
                                              get_atomic_kind
   USE cell_types,                      ONLY: cell_type,&
@@ -108,10 +109,11 @@ CONTAINS
 !>      cjm, 28-Feb-2006: box_change is gone
 !> \author CJM & JGH
 ! *****************************************************************************
-  SUBROUTINE fist_force_control(fist_env, virial, para_env, debug, force_env_section,&
-       error)
+  SUBROUTINE fist_force_control(fist_env, virial, atprop_env, &
+       para_env, debug, force_env_section, error)
     TYPE(fist_environment_type), POINTER     :: fist_env
     TYPE(virial_type), POINTER               :: virial
+    TYPE(atprop_type), POINTER               :: atprop_env
     TYPE(cp_para_env_type), POINTER          :: para_env
     TYPE(debug_variables_type), &
       INTENT(INOUT), OPTIONAL                :: debug
@@ -279,22 +281,23 @@ CONTAINS
 
        ! Compute embedding function and manybody energy
        CALL energy_manybody(fist_nonbond_env, atomic_kind_set, local_particles, particle_set,&
-            cell, pot_manybody, para_env ,error=error)
+            cell, pot_manybody, atprop_env, para_env ,error=error)
 
        ! Nonbond contribution + Manybody Forces
        IF(shell_present)THEN
           CALL force_nonbond(fist_nonbond_env, ewald_env, particle_set, cell, &
                pot_nonbond, f_nonbond, pv_nonbond, &
                fshell_nonbond=fshell_nonbond, fcore_nonbond=fcore_nonbond, &
+               atprop_env=atprop_env,&
                atomic_kind_set=atomic_kind_set, use_virial=use_virial, &
                error=error)
        ELSE
           CALL force_nonbond(fist_nonbond_env, ewald_env, particle_set, cell, &
-               pot_nonbond, f_nonbond, pv_nonbond, &
+               pot_nonbond, f_nonbond, pv_nonbond, atprop_env=atprop_env,&
                atomic_kind_set=atomic_kind_set, use_virial=use_virial, &
                error=error)
           CALL force_nonbond_manybody(fist_nonbond_env, particle_set, cell, f_nonbond, pv_nonbond,&
-               use_virial=use_virial, error=error)
+               atprop_env=atprop_env, use_virial=use_virial, error=error)
        END IF
     ELSE
        f_nonbond  = 0.0_dp

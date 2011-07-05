@@ -14,6 +14,7 @@
 MODULE manybody_potential
 
   USE atomic_kind_types,               ONLY: atomic_kind_type
+  USE atprop_types,                    ONLY: atprop_type
   USE cell_types,                      ONLY: cell_type
   USE cp_para_types,                   ONLY: cp_para_env_type
   USE distribution_1d_types,           ONLY: distribution_1d_type
@@ -62,7 +63,7 @@ CONTAINS
 !> \author CJM, I-Feng W. Kuo, Teodoro Laino 
 ! *****************************************************************************
   SUBROUTINE energy_manybody ( fist_nonbond_env, atomic_kind_set, local_particles,&
-       particle_set, cell, pot_manybody, para_env, error )
+       particle_set, cell, pot_manybody, atprop_env, para_env, error )
 
     TYPE(fist_nonbond_env_type), POINTER     :: fist_nonbond_env
     TYPE(atomic_kind_type), POINTER          :: atomic_kind_set( : )
@@ -70,6 +71,7 @@ CONTAINS
     TYPE(particle_type), POINTER             :: particle_set( : )
     TYPE(cell_type), POINTER                 :: cell
     REAL(dp), INTENT(INOUT)                  :: pot_manybody
+    TYPE(atprop_type), POINTER               :: atprop_env
     TYPE(cp_para_env_type), OPTIONAL, &
       POINTER                                :: para_env
     TYPE(cp_error_type), INTENT(inout)       :: error
@@ -240,7 +242,7 @@ CONTAINS
 !> \author I-Feng W. Kuo, Teodoro Laino
 ! *****************************************************************************
   SUBROUTINE force_nonbond_manybody ( fist_nonbond_env, particle_set, cell,  &
-       f_nonbond, pv_nonbond, use_virial, error )
+       f_nonbond, pv_nonbond, atprop_env, use_virial, error )
 
     TYPE(fist_nonbond_env_type), POINTER     :: fist_nonbond_env
     TYPE(particle_type), DIMENSION(:), &
@@ -248,6 +250,7 @@ CONTAINS
     TYPE(cell_type), POINTER                 :: cell
     REAL(KIND=dp), DIMENSION(:, :), &
       INTENT(INOUT)                          :: f_nonbond, pv_nonbond
+    TYPE(atprop_type), POINTER               :: atprop_env
     LOGICAL, INTENT(IN)                      :: use_virial
     TYPE(cp_error_type), INTENT(inout)       :: error
 

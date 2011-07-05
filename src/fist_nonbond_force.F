@@ -16,6 +16,7 @@ MODULE fist_nonbond_force
   USE atomic_kind_types,               ONLY: atomic_kind_type,&
                                              get_atomic_kind,&
                                              get_atomic_kind_set
+  USE atprop_types,                    ONLY: atprop_type
   USE cell_types,                      ONLY: cell_type,&
                                              pbc
   USE distribution_1d_types,           ONLY: distribution_1d_type
@@ -67,7 +68,7 @@ CONTAINS
 ! *****************************************************************************
   SUBROUTINE force_nonbond(fist_nonbond_env, ewald_env, particle_set, cell, &
        pot_nonbond, f_nonbond, pv_nonbond, fshell_nonbond, fcore_nonbond, &
-       atomic_kind_set, use_virial, error)
+       atprop_env, atomic_kind_set, use_virial, error)
 
     TYPE(fist_nonbond_env_type), POINTER     :: fist_nonbond_env
     TYPE(ewald_environment_type), POINTER    :: ewald_env
@@ -79,6 +80,7 @@ CONTAINS
       INTENT(INOUT)                          :: f_nonbond, pv_nonbond
     REAL(KIND=dp), DIMENSION(:, :), &
       INTENT(OUT), OPTIONAL                  :: fshell_nonbond, fcore_nonbond
+    TYPE(atprop_type), POINTER               :: atprop_env
     TYPE(atomic_kind_type), POINTER          :: atomic_kind_set(:)
     LOGICAL, INTENT(IN)                      :: use_virial
     TYPE(cp_error_type), INTENT(inout)       :: error

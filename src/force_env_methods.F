@@ -14,6 +14,9 @@
 ! *****************************************************************************
 MODULE force_env_methods
 
+  USE atprop_types,                    ONLY: atprop_create,&
+                                             atprop_init,&
+                                             atprop_type
   USE cell_types,                      ONLY: cell_clone,&
                                              cell_create,&
                                              cell_release,&
@@ -177,6 +180,7 @@ CONTAINS
     REAL(kind=dp), DIMENSION(:), POINTER     :: pos
     TYPE(cell_type), POINTER                 :: cell
     TYPE(cp_logger_type), POINTER            :: logger
+    TYPE(atprop_type), POINTER               :: atprop_env
     TYPE(cp_result_type), POINTER            :: results
     TYPE(cp_subsys_type), POINTER            :: subsys
     TYPE(particle_list_type), POINTER        :: core_particles, particles, &
@@ -199,22 +203,29 @@ CONTAINS
     IF (.NOT.failure) THEN
        CPPrecondition(force_env%ref_count>0,cp_failure_level,routineP,error,failure)
     END IF
+
     CALL force_env_get(force_env,virial=virial,error=error)
     CALL force_env_set(force_env,additional_potential=0.0_dp,error=error)
     IF (virial%pv_availability) CALL zero_virial(virial,reset=.FALSE.)
+
+    NULLIFY (atprop_env)
+    CALL force_env_get(force_env,atprop_env=atprop_env,error=error)
+    nat=force_env_get_natom(force_env,error=error)
+    CALL atprop_init(atprop_env,nat,error)
+
     IF (.NOT.failure) THEN
        IF (eval_ef) THEN
           SELECT CASE ( force_env%in_use )
           CASE ( use_fist_force )
-             CALL fist_force_control( force_env%fist_env, virial, force_env%para_env, &
+             CALL fist_force_control( force_env%fist_env, virial, atprop_env, force_env%para_env, &
                   force_env_section=force_env%force_env_section, error=error)
              CALL fist_env_get(fist_env=force_env%fist_env,results=results,error=error)
           CASE (use_ep_force)
              CALL ep_env_calc_e_f(force_env%ep_env,calculate_forces,error=error)
           CASE ( use_qs_force )
              IF (.NOT.calculate_forces) THEN
-                CALL qs_energies(qs_env=force_env%qs_env, consistent_energies=energy_consistency, calc_forces=calculate_forces, &
-                     error=error)
+                CALL qs_energies(qs_env=force_env%qs_env, consistent_energies=energy_consistency, &
+                     calc_forces=calculate_forces, error=error)
              ELSE
                 CALL qs_forces(force_env%qs_env,force_env%globenv, error=error)
              END IF
@@ -337,6 +348,12 @@ CONTAINS
        ELSE
           CALL zero_virial(virial,reset=.FALSE.)
        END IF
+    END IF
+
+    !atomic properties
+    IF (atprop_env%energy) THEN
+    END IF
+    IF (atprop_env%stress) THEN
     END IF
 
   END SUBROUTINE force_env_calc_energy_force
@@ -519,7 +536,8 @@ CONTAINS
 
     INTEGER                                  :: stat, stress_tensor
     LOGICAL                                  :: failure, pv_availability, &
-                                                pv_diagonal, pv_numerical
+                                                pv_diagonal, pv_numerical, &
+                                                atomic_energy, atomic_stress
     TYPE(cp_subsys_type), POINTER            :: subsys
 
     failure=.FALSE.
@@ -533,7 +551,7 @@ CONTAINS
             force_env%meta_env, force_env%sub_force_env, &
             force_env%qmmm_env, force_env%ep_env, force_env%fp_env, &
             force_env%force_env_section, force_env%eip_env,force_env%mixed_env,&
-            force_env%root_section, force_env%cpot_env,force_env%results)
+            force_env%root_section, force_env%cpot_env, force_env%atprop_env, force_env%results)
        last_force_env_id=last_force_env_id+1
        force_env%id_nr=last_force_env_id
        force_env%ref_count=1
@@ -576,6 +594,17 @@ CONTAINS
           pv_numerical=.TRUE.
           pv_diagonal=.TRUE.
        END SELECT
+
+       ! Should we compute atomic properties?
+       CALL atprop_create(force_env%atprop_env,error)
+       CALL section_vals_val_get(force_env_section,"PROPERTIES%ATOMIC%ENERGY",l_val=atomic_energy,error=error)
+       force_env%atprop_env%energy = atomic_energy
+       CALL section_vals_val_get(force_env_section,"PROPERTIES%ATOMIC%PRESSURE",l_val=atomic_stress,error=error)
+       IF (atomic_stress) THEN
+          CPPrecondition(pv_availability,cp_failure_level,routineP,error,failure)
+          CPPrecondition(.NOT.pv_numerical,cp_failure_level,routineP,error,failure)
+       END IF
+       force_env%atprop_env%stress = atomic_stress
 
        IF (PRESENT(fist_env)) THEN
           IF (ASSOCIATED(fist_env)) THEN
