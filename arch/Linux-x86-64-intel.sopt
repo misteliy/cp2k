@@ -17,14 +17,19 @@ CPP      =
 FC       = ifort
 LD       = ifort
 AR       = ar -r
-DFLAGS   = -D__INTEL -D__FFTSG -D__FFTW3 -D__FFTACML
+DFLAGS   = -D__INTEL -D__FFTSG -D__FFTW3 -D__FFTACML -D__LIBINT
 CPPFLAGS = -C -traditional $(DFLAGS) -I$(INTEL_INC)
 FCFLAGS  = $(DFLAGS) -I$(INTEL_INC) -O2 -xW -heap-arrays 64 -fpp -free
-FCFLAGS2 = $(DFLAGS) -I$(INTEL_INC) -O1 -xW -heap-arrays 64 -fpp -free
+FCFLAGS2 = $(DFLAGS) -I$(INTEL_INC) -O0 -xW -heap-arrays 64 -fpp -free
 LDFLAGS  = $(FCFLAGS)
 LIBS     = $(INTEL_LIB)/libacml.a\
            $(INTEL_LIB)/libacml_mv.a \
-           $(INTEL_LIB)/libfftw3.a
+           $(INTEL_LIB)/libfftw3.a\
+           $(INTEL_LIB)/libint_wrapper.o\
+           $(INTEL_LIB)/libderiv.a\
+           $(INTEL_LIB)/libint.a\
+           /usr/lib64/libstdc++.so.6
+
 
 OBJECTS_ARCHITECTURE = machine_intel.o
 

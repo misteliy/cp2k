@@ -3,7 +3,7 @@ CPP      =
 FC       = mpif90
 LD       = mpif90
 AR       = ar -r
-DFLAGS   = -D__NAG -D__FFTSG -D__FFTW3 -D__parallel -D__BLACS -D__SCALAPACK -D__PTR_RANK_REMAP
+DFLAGS   = -D__NAG -D__FFTSG -D__FFTW3 -D__parallel -D__BLACS -D__SCALAPACK -D__LIBINT
 CPPFLAGS =
 FCFLAGS  = -O2 -mismatch_all -fpp -free  $(DFLAGS) -I$(NAG_INC)
 LDFLAGS  = $(FCFLAGS)
@@ -13,6 +13,10 @@ LIBS     = $(NAG_LIB)/libscalapack.a \
            $(NAG_LIB)/libacml.a\
            $(NAG_LIB)/libacml_mv.a\
            $(NAG_LIB)/libfftw3.a\
+           $(NAG_LIB)/libderiv.a\
+           $(NAG_LIB)/libint.a\
+           $(NAG_LIB)/libint_wrapper.o\
+           /usr/lib64/libstdc++.so.6\
            -lpthread
 
 

@@ -3,20 +3,17 @@
 # status on http://gcc.gnu.org/bugzilla/show_bug.cgi?id=29975
 #
 CC       = cc
-CPP      =
-FC       = gfortran
-LD       = gfortran
-AR       = ar -r
-CPPFLAGS = 
-DFLAGS   = -D__GFORTRAN -D__FFTSG -D__LIBINT
-FCFLAGS  = -O0 -ffree-form -fbounds-check $(DFLAGS) -fbacktrace -g
-LDFLAGS  = $(FCFLAGS) 
-LIBS     = $(GFORTRAN_LIB)/libreflapack.a\
-           $(GFORTRAN_LIB)/librefblas.a\
-           /data03/mguidon/cp2k/libint_tools/libint_cpp_wrapper.o\
-           $(GFORTRAN_LIB)/libderiv.a\
-           $(GFORTRAN_LIB)/libint.a\
-           -lstdc++ 
+CPP      = 
 
+FC       = gfortran 
+LD       = gfortran
+
+AR       = ar -r
+
+CPPFLAGS = 
+DFLAGS   = -D__GFORTRAN -D__FFTSG -D__FFTW3 -D__LIBINT -D__HAS_NO_ISO_C_BINDING
+FCFLAGS  = -g -O2 -fbounds-check -march=native -ffree-form $(DFLAGS) -I$(GFORTRAN_INC)
+LDFLAGS  = $(FCFLAGS) -L/users/vondele/LAPACK/ -L$(GFORTRAN_LIB)
+LIBS     = -llapack_gfortran_x86 -lblas_gfortran_x86 -lfftw3 $(GFORTRAN_LIB)/libint_wrapper.o -lderiv -lint -lstdc++
 
 OBJECTS_ARCHITECTURE = machine_gfortran.o
