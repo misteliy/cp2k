@@ -1,6 +1,8 @@
 #
 # gfortran arch file, currently for testing gfortran (svn version 4.3)
 # status on http://gcc.gnu.org/bugzilla/show_bug.cgi?id=29975
+GFORTRAN_LIB = /ext/software/64/opt4/gfortran-suite/lib
+GFORTRAN_INC = /ext/software/64/opt4/gfortran-suite/include
 #
 CC       = cc
 CPP      = 
