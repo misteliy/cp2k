@@ -1,0 +1,141 @@
+&FORCE_EVAL
+  METHOD QMMM
+  &DFT
+    BASIS_SET_FILE_NAME ../GTH_BASIS_SETS
+    POTENTIAL_FILE_NAME ../POTENTIAL
+    &MGRID
+      COMMENSURATE
+      CUTOFF 50
+    &END MGRID
+    &QS
+    &END QS
+    &SCF
+      SCF_GUESS atomic
+    &END SCF
+    &XC
+      &XC_FUNCTIONAL pade
+      &END XC_FUNCTIONAL
+    &END XC
+  &END DFT
+  &MM
+    &FORCEFIELD
+      &BEND
+        ATOMS H O H
+        K 0.
+        THETA0 1.8
+      &END BEND
+      &BOND
+        ATOMS O H
+        K 0.
+        R0 1.8
+      &END BOND
+      &CHARGE
+        ATOM O
+        CHARGE -0.8080
+      &END CHARGE
+      &CHARGE
+        ATOM H
+        CHARGE 0.4040
+      &END CHARGE
+      &NONBONDED
+        &LENNARD-JONES
+          atoms O O
+          EPSILON 78.198
+          SIGMA 3.166
+          RCUT 11.4
+        &END LENNARD-JONES
+        &LENNARD-JONES
+          atoms O H
+          EPSILON 0.0
+          SIGMA 3.6705
+          RCUT 11.4
+        &END LENNARD-JONES
+        &LENNARD-JONES
+          atoms H H
+          EPSILON 0.0
+          SIGMA 3.30523
+          RCUT 11.4
+        &END LENNARD-JONES
+      &END NONBONDED
+    &END FORCEFIELD
+    &POISSON
+      &EWALD
+        EWALD_TYPE spme
+        ALPHA .44
+        GMAX 64
+        O_SPLINE 6
+      &END EWALD
+    &END POISSON
+  &END MM
+  &QMMM
+    MM_POTENTIAL_FILE_NAME ../MM_POTENTIAL
+    &CELL
+      ABC 6.0 6.0 6.0
+    &END CELL
+    ECOUPL GAUSS
+    NOCOMPATIBILITY
+    &INTERPOLATOR
+      EPS_R 1.0e-14
+      EPS_X 1.0e-14
+      MAXITER 100
+    &END INTERPOLATOR
+    &MM_KIND H
+      RADIUS 0.44
+    &END MM_KIND
+    &MM_KIND O
+      RADIUS 0.78
+    &END MM_KIND
+    &QM_KIND H
+      MM_INDEX 2 3
+    &END QM_KIND
+    &QM_KIND O
+      MM_INDEX 1
+    &END QM_KIND
+  # 
+  # QM_KINDS
+  # 
+  # 
+  # MM_KINDS
+  # 
+  # 
+  &END QMMM
+  &SUBSYS
+    &CELL
+      ABC 24.955 24.955 24.955
+    &END CELL
+    &COORD
+    O     0.000000     0.000000     0.000000   H2O1
+    H     0.000000     0.000000     0.950000   H2O1
+    H     0.895669     0.000000    -0.316667   H2O1
+    O    -2.987344     0.000000    -0.275275   H2O2
+    H    -3.160937     0.000000     0.658730   H2O2
+    H    -3.810068     0.000000    -0.750275   H2O2
+    O    -1.255276     0.000000    -2.724753   H2O3
+    H    -1.977352     0.000000    -3.342092   H2O3
+    H    -0.432552     0.000000    -3.199753   H2O3
+    &END COORD
+    &KIND H
+      BASIS_SET SZV-GTH
+      POTENTIAL GTH-PADE-q1
+    &END KIND
+    &KIND O
+      BASIS_SET SZV-GTH
+      POTENTIAL GTH-PADE-q6
+    &END KIND
+    &TOPOLOGY
+    &END TOPOLOGY
+  &END SUBSYS
+&END FORCE_EVAL
+&GLOBAL
+  PROJECT H2O-qmmm-gauss-3
+  PRINT_LEVEL MEDIUM
+  RUN_TYPE md
+&END GLOBAL
+&MOTION
+  &MD
+    ENSEMBLE NVE
+    STEPS 2
+    TIMESTEP 0.5
+    TEMPERATURE 298
+  &END MD
+&END MOTION

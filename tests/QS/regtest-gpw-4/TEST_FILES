@@ -1,0 +1,66 @@
+# runs are executed in the same order as in this file
+# the second field tells which test should be run in order to compare with the last available output
+# e.g. 0 means do not compare anything, running is enough
+#      1 compares the last total energy in the file
+#      for details see cp2k/tools/do_regtest
+# isokinetic ensemble
+H2O-5.inp          1
+# the added_MOs keyword
+H2O-6.inp          1
+# tests BFGS and LBFGS and CG
+H2-geo-1.inp       1
+H2-geo-2.inp       1
+H2-geo-3.inp       1
+H2-geo-4.inp       1
+# some problems with CU
+Cu.inp             1
+# test derivatives and keywords
+H2O-debug-1.inp    1
+H2O-debug-2.inp    1
+H2O-debug-3.inp    1
+H2O-debug-4.inp    1
+# new colvar
+C2H4-meta.inp      1
+# improved atomic_kind
+test-pdb.inp       1
+# Spin density DDAP charges
+H2O+SC.inp         0
+# spin restraint
+spin_restraint.inp 1
+#New grouping colvar
+H2O-meta_g.inp     1
+#Colvar for hydronium
+H2O-meta_hydro.inp 1
+#NPT ensemble with QS
+H2O-7.inp          1
+#test wavelet based poisson solver for different boundary conditions
+H2O_wavelet_free.inp  1
+H2O_wavelet_free2.inp 1
+H2O_wavelet_XZ.inp    1
+#function to compute splined values - distributed grids
+NO2-EFG-1.inp        19
+H2O-8.inp            1
+H2O-9.inp            1
+# a system with a very small (1x1) KS matrix
+H.inp                1
+# one (ghost) atom has no basis set associated
+basis_none_1.inp     1
+basis_none_2.inp     1
+# cell opt with a restart
+cell-1.inp           7
+cell-2.inp           7
+#multiple ddapc restraints
+He3_multi_ddapc.inp  1
+#many added MOS with LSD
+N.inp                1
+N_notfixedMM.inp     1
+#new diagonalization
+h2o-otdiag.inp       1
+h2o-diag.inp         1
+h2o-otdiag-lsd.inp   1
+#external electrostatic field
+H2O-extpot.inp      11
+H-extpot.inp        11
+# welltempered metadynamics
+2H2O_meta_welltemp.inp  1
+ND3_meta_welltemp.inp   1

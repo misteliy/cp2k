@@ -1,0 +1,41 @@
+#CPQA INCLUDE ../nonscc/nonscc_parameter
+#CPQA INCLUDE ../uff_table
+#CPQA INCLUDE ../nonscc/ss
+&FORCE_EVAL
+  &DFT
+    &QS
+      METHOD DFTB
+      &DFTB
+        SELF_CONSISTENT    F
+        ORTHOGONAL_BASIS   F   
+        DO_EWALD           F
+        &PARAMETER
+          PARAM_FILE_PATH  ../nonscc
+          SK_FILE   S S   ss
+        &END PARAMETER
+      &END DFTB
+    &END QS
+    &SCF
+      SCF_GUESS NONE
+      &MIXING
+          METHOD DIRECT_P_MIXING
+          ALPHA   1.
+      &END
+    &END SCF
+  &END DFT
+  &SUBSYS
+    &CELL
+      ABC 20.0 20.0 20.0
+      PERIODIC NONE
+    &END CELL
+    &COORD
+     S     0.000000    0.000000    0.000000   
+     S     1.200000    0.000000    0.000000  
+    &END COORD
+  &END SUBSYS
+&END FORCE_EVAL
+&GLOBAL
+  PROJECT s2
+  RUN_TYPE GEO_OPT
+  PRINT_LEVEL HIGH
+&END GLOBAL

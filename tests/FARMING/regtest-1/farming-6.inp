@@ -1,0 +1,62 @@
+#CPQA DEPENDS farming-5.inp
+#CPQA INCLUDE dir-1/water.inp
+#CPQA INCLUDE dir-2/water.inp
+#CPQA INCLUDE dir-3/water.inp
+#CPQA INCLUDE dir-4/water.inp
+#CPQA INCLUDE dir-5/water.inp
+#CPQA INCLUDE dir-6/water.inp
+#CPQA INCLUDE dir-7/water.inp
+#CPQA INCLUDE dir-8/water.inp
+#CPQA INCLUDE dir-9/water.inp
+#CPQA INCLUDE ../water_1.pdb
+#CPQA INCLUDE ../water.pot
+
+&GLOBAL
+  PROGRAM FARMING
+  RUN_TYPE NONE
+&END GLOBAL
+
+&FARMING
+  NGROUP 2
+  ! CYCLE
+  RESTART_FILE_NAME FARMING_TO_RESTART-FARMING-1.restart
+  DO_RESTART
+  ! MAX_JOBS_PER_GROUP 10
+  &JOB
+    DIRECTORY dir-1
+    INPUT_FILE_NAME water.inp
+  &END JOB
+  &JOB
+    DIRECTORY dir-2
+    INPUT_FILE_NAME water.inp
+  &END JOB
+  &JOB
+    DIRECTORY dir-3
+    INPUT_FILE_NAME water.inp
+  &END JOB
+  &JOB
+    DIRECTORY dir-4
+    INPUT_FILE_NAME water.inp
+  &END JOB
+  &JOB
+    DIRECTORY dir-5
+    INPUT_FILE_NAME water.inp
+  &END JOB
+  &JOB
+    DIRECTORY dir-6
+    INPUT_FILE_NAME water.inp
+  &END JOB
+  &JOB
+    DIRECTORY dir-7
+    INPUT_FILE_NAME water.inp
+  &END JOB
+  &JOB
+    DIRECTORY dir-8
+    INPUT_FILE_NAME water.inp
+  &END JOB
+  &JOB
+    DIRECTORY dir-9
+    INPUT_FILE_NAME water.inp
+  &END JOB
+&END FARMING
+

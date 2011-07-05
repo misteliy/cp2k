@@ -1,0 +1,33 @@
+&FORCE_EVAL
+  METHOD Quickstep
+  &DFT
+    CHARGE 1
+    &QS
+      METHOD MNDO
+      &SE
+       
+      &END
+    &END QS
+    &SCF
+      MAX_SCF 20
+      SCF_GUESS ATOMIC
+    &END SCF
+  &END DFT
+  &SUBSYS
+    &CELL
+      ABC 20.0 20.0 20.0
+      PERIODIC NONE
+    &END CELL
+    &COORD
+          H                 -1.01578458     .00000000     .00000000
+          N                   .00000000     .00000000     .00000000
+          H                   .33859487     .95769088     .00000000
+          H                   .33859487    -.47884544    -.82938463
+          H                   .33859487    -.47884544     .82938463
+    &END COORD
+  &END SUBSYS
+&END FORCE_EVAL
+&GLOBAL
+  PROJECT nh4
+  RUN_TYPE GEO_OPT
+&END GLOBAL

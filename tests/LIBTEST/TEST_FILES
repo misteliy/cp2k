@@ -1,0 +1,15 @@
+# runs are executed in the same order as in this file
+# the second field tells which test should be run in order to compare with the last available output
+# see regtest/TEST_FILES
+test_01.inp            0
+test_02.inp            0
+test_pw.inp            0
+test_pw_02.inp         0
+test_pw_03.inp         0
+test_pw_04.inp         0
+test_cp_fm_gemm_01.inp 0
+test_cp_fm_gemm_02.inp 0
+eig.inp                0
+dbcsr_ctype.inp        0
+dbcsr_mm_blas.inp      0
+dbcsr_subcomm.inp      0

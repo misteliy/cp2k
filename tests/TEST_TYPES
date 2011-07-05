@@ -1,0 +1,66 @@
+49
+Total energy:!3
+POTENTIAL ENERGY!4
+Total energy \[eV\]:!4
+Ideal and single determinant!8
+BSSE-free interaction energy:!5
+Average Energy !4
+Total Energy               =!4
+VIB|Frequency !3
+PINT| Total energy = !5
+BAND TOTAL ENERGY \[au\] !6
+ENERGY| Total FORCE_EVAL!9
+B2(T) =!4
+sparseness function f2 =!5
+CheckSum Shifts =!4
+CheckSum NICS =!4
+CheckSum Chi =!4
+Total=!8
+MS| TRACKED FREQUENCY!6
+CheckSum splines =!4
+epr|TOT:checksum!2
+VIB| !3
+PW exchange energy!5
+Total Spread!5
+DFT+U energy:!3
+Local Curvature            =!4
+Total electronic charge (G-space):!6
+Total electronic charge (R-space):!5
+Total spin density (R-space)           :!6
+Heat of formation \[kcal/mol\]:!5
+HOMO - LUMO gap \[eV\]!7
+1/3 Trace(stress tensor):!4
+POTENTIAL ENERGY!5
+Dispersion energy:!3
+ISSC| all operator: CheckSum =!6
+Energy components!7
+ISSC| response: CheckSum =!5
+TDDFPT : CheckSum  =!5
+ISSC| CheckSum K =!5
+X=!2
+HELIUM| Total energy = !5
+Total charge and spin!9
+Sum of differences in pv_virial:!6
+SUM OF CORE FORCES !8
+SUM OF SHELL FORCES !8
+PRM01!2
+Final value !6
+SUMMARY:: Number of molecule kinds found:!7
+Fermi energy: !3
+Total Multiplication !9
+#
+# these are the tests the can be selected for regtesting. 
+# do regtest will grep for test_grep (first column) and look if the numeric value
+# at column test_col (second col) changes with respect to the reference.
+# the test number in TEST_FILES corresponds to the lines in this file.
+#
+#
+# the format of the TEST_TYPES file is (notice the '!' as a field separator, to allow
+# for spaces in the test_grep)
+#
+# Ntest_types
+# test_grep_1 ! test_col_1
+# test_grep_2 ! test_col_2
+# ....
+# followed by comment lines
+#

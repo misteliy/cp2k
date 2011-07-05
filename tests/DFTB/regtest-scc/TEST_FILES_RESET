@@ -1,0 +1,204 @@
+#
+# add files to be reset here
+#
+h2o-1.inp
+h2o-4.inp
+h2o-5.inp
+#
+ch2o-1.inp
+ch2o-2.inp
+ch2o-3.inp
+ch2o-4.inp
+ch2o-5.inp
+ch2o.inp
+co.inp
+h2o-1.inp
+h2o-2.inp
+h2o-3.inp
+h2o-4.inp
+h2o.inp
+# reduce test size
+h2o-2.inp
+h2o-3.inp
+h2o-4.inp
+# reduce test size
+h2o-1.inp
+#  
+ch2o-5.inp
+#  
+h2o-3.inp
+# new tests
+ch2o-r.inp 
+ch2o-p.inp
+# 
+ch2o.inp 
+# new tests
+ch2o-ot1.inp 
+ch2o-ot2.inp 
+ch2o-ot3.inp 
+ch2o-ot4.inp 
+ch2o-ot5.inp 
+ch2o-ot6.inp 
+#new
+h2o-5.inp
+# use new default alpha for ewald sums
+h2o-1.inp
+h2o-2.inp
+h2o-3.inp
+h2o-4.inp
+h2o.inp
+h2o-5.inp
+ch2o-2.inp
+ch2o-3.inp
+#  
+ch2o-1.inp
+#  
+ch2o-3.inp
+#  
+ch2o-5.inp
+#  
+ch2o-r.inp
+#  
+h2o-1.inp
+#  
+h2o-2.inp
+#  
+h2o-3.inp
+#  
+h2o-4.inp
+#  
+h2o-5.inp
+#  
+ch2o-1.inp
+#  
+ch2o-3.inp
+#  
+ch2o-5.inp
+#  
+ch2o-r.inp
+#  
+h2o-1.inp
+#  
+h2o-2.inp
+#  
+h2o-3.inp
+#  
+h2o-4.inp
+#  
+h2o-5.inp
+#  
+h2o-1.inp
+#  
+h2o-2.inp
+#  
+h2o-3.inp
+#  
+h2o-4.inp
+#  
+h2o-5.inp
+# Merging behavior of all optimizer. one more step of energy evaluation after convergence.
+ch2o-5.inp
+# CODATA 2006
+ch2o-2.inp
+ch2o-3.inp
+ch2o-4.inp
+ch2o-5.inp
+ch2o.inp
+ch2o-ot1.inp
+ch2o-ot2.inp
+ch2o-ot3.inp
+ch2o-ot4.inp
+ch2o-ot5.inp
+ch2o-ot6.inp
+ch2o-p.inp
+ch2o-r.inp
+co.inp
+h2o-1.inp
+h2o-2.inp
+h2o-3.inp
+h2o-4.inp
+h2o-5.inp
+h2o.inp
+test-lsd.inp
+#
+ch2o-ot4.inp
+# constant rootpi corrected 
+h2o-1.inp
+h2o-2.inp
+h2o-3.inp
+h2o-4.inp
+h2o-5.inp
+# ASPC reset 
+ch2o-1.inp
+# ASPC reset 
+ch2o-3.inp
+# ASPC reset 
+ch2o-5.inp
+# ASPC reset 
+h2o_hb_corr.inp
+#syevd
+co.inp
+# dispersion bug
+h2o.inp
+h2o_hb_corr.inp
+#
+ch2o-ot1.inp
+ch2o-ot2.inp
+ch2o-ot3.inp
+ch2o-ot4.inp 
+ch2o-ot5.inp
+# Numerics changes due to different distributions 
+ch2o-ot1.inp
+# Numerics changes due to different distributions 
+ch2o-ot2.inp
+# Numerics changes due to different distributions 
+ch2o-ot3.inp
+# Numerics changes due to different distributions 
+ch2o-ot4.inp
+# turned on dbcsr_multiply_fm_fm_t
+ch2o-5.inp
+# turned on dbcsr_multiply_fm_fm_t
+h2o-3.inp
+# more to reset
+ch2o-4.inp
+test-lsd.inp
+#
+ch2o-ot5.inp
+# Numerics
+ch2o-4.inp
+#  
+ch2o-4.inp
+#  
+ch2o-5.inp
+#  
+h2o-3.inp
+#  
+ch2o-ot1.inp
+#  
+ch2o-ot2.inp
+#  
+ch2o-ot3.inp
+#  
+ch2o-ot4.inp
+#  
+ch2o-ot5.inp
+#  
+ch2o-ot6.inp
+#  
+test-lsd.inp
+# Update of atomic weights 
+h2o-1.inp
+h2o-2.inp
+h2o-3.inp
+h2o-4.inp
+h2o-5.inp
+# Bug fix self term of dispersion energy
+ch2o-2.inp
+ch2o-3.inp
+ch2o-4.inp
+ch2o-5.inp
+ch2o.inp
+ch2o-r.inp
+ch2o-p.inp
+h2o.inp
+h2o_hb_corr.inp

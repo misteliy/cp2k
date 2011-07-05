@@ -1,0 +1,20 @@
+
+This is the CP2K software & test suite
+
+ * COPYRIGHT: the license of under which CP2K can be distributed
+ * INSTALL: How to set up the program (mainly how to compile it)
+ * README: This file
+ * arch: Definitions for different architectures/compilers
+ * doc: Documentation, mostly for developers
+ * exe: where the executables will be located
+ * lib: library built during compilation
+ * makefile: the one and only Makefile
+ * obj: Where the object and other compilation-time files
+ * src: The source code; please see also the file 'INSTALL'
+ * tests: Test inputs 
+ * tools: Some small programs/scripts needed to compile the program
+
+--
+for information have a look at :
+http://cp2k.berlios.de/
+

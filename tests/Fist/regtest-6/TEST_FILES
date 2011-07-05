@@ -1,0 +1,38 @@
+#free energy calculation
+NaCl_fe.inp               2
+# new constraints distance_difference
+water_3_ddist.inp         2
+# distributed grid for spme/pme
+JAC_distr.inp             2
+H2O-32_PME_distr.inp      2
+# Central Force Water test (Nir)
+cf_genpot.inp             2
+# Tersoff potential test
+Si_tersoff_rcut.inp       2
+Si_tersoff.inp            2
+Si_tersoff_2.inp          2
+Si_tersoff_3.inp          2
+C_tersoff.inp             2
+# New grouping colvar
+ethene_colv1_g.inp        2
+ethene_colv2_g.inp        2
+nh3-meta-1_g.inp          2
+water_3_ddist_g.inp       2
+water_3_dist_g.inp        2
+water_3_dist_centers.inp  2
+water_3_dist_centers2.inp 2
+water_3_dist_centers3.inp 2
+# more on pbc
+cubane_15.inp             7
+cubane_0.inp              7
+#fist debug run
+cf_genpot_debug.inp       0
+# buck-morse potential
+uo2_buckmorse_nve.inp     2
+# colvar dist xyz component test
+water_3_dist_xyz.inp      2
+argon_ext.inp             2
+#external potential on a selected list of atoms
+extern_pot-test-01.inp    2
+extern_pot-test-02.inp    2
+extern_pot-test-03.inp    2

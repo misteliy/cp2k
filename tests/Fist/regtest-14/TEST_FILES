@@ -1,0 +1,28 @@
+# test of gle thermostat
+argon-nve.inp    2
+argon-nose.inp   2
+argon-csvr.inp   2
+argon-gle.inp    2
+argon-gle_r.inp  2
+#new FF
+water_mm3.inp   11
+#mol_set + amber
+lamol.inp        2
+#impropers read from input file section
+imp_test_11.inp 11
+imp_test_12.inp 11
+imp_test_21.inp 11
+imp_test_22.inp 11
+opbend_test.inp 11
+# new exclusions
+11_exvdw_12_exei.inp               11
+11_exvdw_11_exei.inp               11
+12_exvdw_12_exei.inp               11
+12_exvdw_12_exei_list_1.inp        11
+12_exvdw_12_exei_list_1_check.inp  11
+12_exvdw_12_exei_list_2.inp        11
+12_exvdw_12_exei_list_2_c.inp      11
+12_exvdw_12_exei_list_empty.inp    11
+#fues
+H2O-1-fues.inp  11
+ignore.inp       2

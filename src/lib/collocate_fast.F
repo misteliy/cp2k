@@ -1,0 +1,55 @@
+! ideally users test for the optional __GRID_CORE macro definition
+! otherwise, we provide some reasonable defaults
+! the included fortran files represent the same kernel, with a fortran representation that optimizes best for a given compiler
+
+
+#if !defined(__GRID_CORE)
+
+#if defined(__G95)
+#define __GRID_CORE 1
+#elif defined(__INTEL)
+#define __GRID_CORE 2
+#elif defined(__PGI)
+#define __GRID_CORE 3
+#elif defined(__GFORTRAN)
+#define __GRID_CORE 4
+#elif defined(__PATHSCALE)
+#define __GRID_CORE 5
+#elif defined(__AIX)
+#define __GRID_CORE 6
+#else 
+!if nothing else is known, use this one
+#define __GRID_CORE 2
+#endif
+
+#endif
+
+#if __GRID_CORE == 1
+
+#include "collocate_fast_1.F"
+
+#elif __GRID_CORE == 2
+
+#include "collocate_fast_2.F"
+
+#elif __GRID_CORE == 3
+
+#include "collocate_fast_3.F"
+
+#elif __GRID_CORE == 4
+
+#include "collocate_fast_4.F"
+
+#elif __GRID_CORE == 5
+
+#include "collocate_fast_5.F"
+
+#elif __GRID_CORE == 6
+
+#include "collocate_fast_6.F"
+
+#else
+
+This is an error, and unknown definition of GRID_CORE (__GRID_CORE) has been used
+
+#endif

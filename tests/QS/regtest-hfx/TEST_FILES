@@ -1,0 +1,17 @@
+# runs are executed in the same order as in this file
+# the second field tells which test should be run in order to compare with the last available output
+# see regtest/TEST_FILES
+H2O-hfx-1.inp         1
+H2O-hfx-2.inp         1
+H2O-hfx-3.inp         1
+CH-hfx-md.inp         2
+CH-hfx-md-2.inp       2
+H2O_pw.inp           22
+4H2O-disk.inp         1
+4H2O-mix-disk-ram.inp 1
+4H2O-mix-disk-ram-on-the-fly.inp 1
+H2O-geminal-1.inp     1
+He-ri.inp             1
+H2O-hfx-emd.inp       2
+H2O-hfx-emd-restart.inp  2 
+He-gemopt.inp         1

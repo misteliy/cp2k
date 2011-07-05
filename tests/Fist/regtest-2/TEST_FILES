@@ -1,0 +1,27 @@
+H2O-32_ewald.inp          2
+H2O-32_PME.inp            2
+H2O-32_SPME.inp           2
+H2O-32_SPME_avg2.inp     32
+H2O-32_SPME_res_1.inp     2
+H2O-32_SPME_res_2.inp     2
+H2O-32_SPME_res_3.inp     2
+H2O-32_SPME_res_4.inp     2
+H2O-32_NPT.inp            2
+H2O-32_NPT_res_1.inp      2
+H2O-32_NPT_res_2.inp      2
+H2O-32_NPT_res_3.inp      2
+H2O-32_NPT_res_4.inp      2
+H2O-32_NPT_res_5.inp      2
+water_IPBV.inp            2
+water_IPBV_flex.inp       2
+sod.inp                   2
+sod2.inp                  2
+#Nose with constraints
+H2O-32_SPME_fixed.inp     2
+H2O-32_SPME_fixed_mol.inp 2
+nacl_wat.inp              2
+#Stress Tensor automatic debug
+H2O-ST_debug.inp         42
+#new colvars (position diagonal and cross term)
+H2O-32_SPME_fixed_clv.inp        2
+H2O-32_SPME_fixed_cross_clv.inp  2

@@ -1,0 +1,53 @@
+&FORCE_EVAL
+  METHOD Quickstep
+  &DFT
+    CHARGE=-1
+    &QS
+      METHOD MNDOD
+      &SE
+       ANALYTICAL_GRADIENTS F
+       STO_NG 6
+      &END
+    &END QS
+    &SCF
+      MAX_SCF 100
+      SCF_GUESS ATOMIC
+      &PRINT
+         &RESTART OFF
+         &END
+      &END
+    &END SCF
+    &PRINT
+      &MO
+        EIGENVECTORS
+        EIGENVALUES
+      &END
+      &AO_MATRICES
+          DENSITY
+          CORE_HAMILTONIAN
+          OVERLAP
+          KOHN_SHAM_MATRIX
+      &END
+    &END
+  &END DFT
+  &SUBSYS
+    &CELL
+      ABC 20.0 20.0 20.0
+      PERIODIC NONE
+    &END CELL
+    &COORD
+       Si       0.0     0.0     0.0 
+       H        1.4     0.0     0.0 
+    &END COORD
+    &PRINT
+      &KINDS
+        BASIS_SET
+        SE_PARAMETERS
+      &END
+    &END
+  &END SUBSYS
+&END FORCE_EVAL
+&GLOBAL
+  PROJECT sih_x
+  RUN_TYPE ENERGY_FORCE
+&END GLOBAL

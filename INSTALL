@@ -1,0 +1,273 @@
+
+How to compile CP2K code
+========================
+
+ 1) Acquire the code:
+
+    see
+        http://cp2k.berlios.de/
+    The preferred method is to download it from the CVS
+    (just use <Enter> if a password is asked for).
+
+    cd $HOME
+    touch $HOME/.cvspass
+    cvs -d:pserver:anonymous@cvs.cp2k.berlios.de:/cvsroot/cp2k login
+    cvs -z3 -d:pserver:anonymous@cvs.cp2k.berlios.de:/cvsroot/cp2k co cp2k
+
+    If cvs is not installed on your system get it at
+        http://www.nongnu.org/cvs/
+
+ 2a) GNU make should be on your system (gmake or make on linux) and used for
+     the build, go to
+         http://www.gnu.org/software/make/make.html 
+     download from
+         http://ftp.gnu.org/pub/gnu/make/
+
+ 2b) A Fortran 95 compiler should be installed on your system. We have good
+     experience with gfortran 4.4.X and 4.5.X.  Be aware that some compilers
+     have bugs that might cause them to fail (internal compiler errors,
+     segfaults) or, worse, yield a miscompiled CP2K. Report bugs to compiler
+     vendors; they (and we) have an interest in fixing them.
+
+ 2c) BLAS and LAPACK should be installed.  Using vendor-provided libraries
+     can make a very significant difference (up to 100%, e.g., ACML, MKL,
+     ESSL).  Note that the BLAS/LAPACK libraries must match the Fortran
+     compiler used.  Use the latest versions available and download all patches!
+     The canonical BLAS and LAPACK can be obtained from the Netetlib repository.
+         http://www.netlib.org/blas/
+         http://www.netlib.org/lapack/ and see also
+         http://www.netlib.org/lapack-dev/
+     A faster alternative is to use the ATLAS project.  It provides BLAS and
+     enough of LAPACK to run CP2K, both optimized for the local machine upon
+     installation.
+         http://math-atlas.sourceforge.net/
+     GotoBLAS is yet a faster BLAS alternative:
+         http://www.tacc.utexas.edu/resources/software/ (GotoBLAS)
+     If compiling with OpenMP support then it is recommended to use a
+     non-threaded version of BLAS.
+
+ 2d) MPI (version 2) and SCALAPACK are needed for parallel code.
+     (Use the latest versions available and download all patches!)
+     If your computing platform does not provide MPI, there are several freely
+     available alternatives:
+     MPICH2 MPI:  http://www-unix.mcs.anl.gov/mpi/mpich/
+     OpenMPI MPI: http://www.open-mpi.org/
+     ScaLAPACK:   http://www.netlib.org/scalapack/ and see also
+                  http://www.netlib.org/lapack-dev/
+     ScaLAPACK can be part of ACML or cluster MKL.  These libraries are
+     recommended if available.  Recently a ScaLAPACK installer has been added
+     that makes installingScaLAPACK easier:
+         http://www.netlib.org/scalapack/scalapack_installer.tgz
+
+ 2e) FFTW can be used to improve FFT speed (depending on architecture).
+     It is strongly recommended to install and use FFTW3.  The current version
+     of CP2K works with FFTW 2.X or FFTW 3.X (use -D__FFTW2 *or* -D__FFTW3).
+         http://www.fftw.org/
+     Note that FFTW must know the Fortran compiler you will use in order to
+     install properly (e.g., 'export F77=g95' before configure if you intend
+     to use g95).
+     Note that on machines and compilers which support SSE you can configure
+     FFTW3 with --enable-sse2.  Compilers/systems that do not allign memory
+     (NAG f95) should either not use '--enable-sse2' or otherwise set the flag
+     FFTW_ARRAYS_ALIGNED to false in the CP2K input file. 
+
+ 2f) Hartree-Fock exchange (optional, use -D__LIBINT) requires the libint
+     package to be installed.  It is easiest to install with a Fortran compiler
+     that supports ISO_C_BINDING and Fortran procedure pointers (recent
+     gfortran, g95, xlf90, ifort).
+     Additional information can be found in
+     cp2k/tools/hfx_tools/libint_tools/README_LIBINT
+     Tested against libinit-1.1.4 and currently hardcoded to the default
+     angular momentum LIBINT_MAX_AM 5
+     (check your include/libint/libint.h to see if it matches)
+         http://www.chem.vt.edu/chem-dept/valeev/software/libint/libint.html
+     Note, do *NOT* use libinit-1.1.3.
+
+ 2g) libsmm support (optional):
+     * A library for small matrix multiplies can be built from the included
+       source (see tools/build_libsmm/README).  Usually only the double
+       precision real and perhaps complex is needed.  Link to the generated
+       libraries.
+     * Add -D__HAS_smm_dnn to the defines to make the code use the double
+       precision real library.  Similarly use -D__HAS_smm_snn for single
+       precision real and -D__HAS_smm_znn / -D__HAS_smm_cnn for
+       double / single precision complex.
+
+ 2h) CUDA support (optional, under development):
+     * (Experimental): Use the __DBCSR_CUDA to compile with CUDA
+       support for matrix multiplication.  For linking add -lcudart and -lrt
+       to LIBS.  The compiler must support ISO_C_BINDING.
+     * Use __CUDAPW and/or __FFTCU for CUDA support for PW and FFT
+       calculations.  The Fortran compiler must use an appended
+       underscore for linking C subroutines.
+     * Consult cuda_tools/README for more information.
+
+
+ 3) To compile the code:
+
+ 3a) The location of compiler and libraries needs to be specified.  Examples
+     for a number of common architectures examples can be found in cp2k/arch/*.*
+     The names of these files match architecture.version (e.g.,
+     Linux-x86-64-g95.sopt).
+     Conventionally, there are four versions:
+     'sopt' - serial
+     'popt' - parallel (only MPI) - recommended for general usage
+     'ssmp' - parallel (only OpenMP)
+     'psmp' - parallel (MPI + OpenMP)
+     You'll need to modify one of these files to match your system's settings.
+     You can now build CP2K using these settings (where -j N allows for a
+     parallel build using N processes):
+     
+     > cd cp2k/makefiles
+     > make -j N ARCH=architecture VERSION=version
+     e.g.
+     > make -j N ARCH=Linux-x86-64-g95 VERSION=sopt
+     as a short-cut, you can build several version of the code at once
+     > make -j N ARCH=Linux-x86-64-g95 sopt popt ssmp psmp
+
+     An executable should appear in cp2k/exe/*
+
+     All compiled files, libraries, executables, .. of all architectures and
+     versions can be removed with
+     > make distclean
+     To remove only objects and mod files (i.e., keep exe) for a given
+     ARCH/VERSION use, e.g.,
+     > make ARCH=Linux-x86-64-g95 VERSION=sopt clean
+     to remove everything for a given ARCH/VERSION use, e.g.,
+     > make ARCH=Linux-x86-64-g95 VERSION=sopt realclean
+
+ 3b) The following flags should be present (or not) in the arch file
+     (see also 3c, next)
+     -D__parallel -D__BLACS -D__SCALAPACK: parallel runs
+     -D__LIBINT: use libint (needed for HF exchange)
+     various FFTs (use __FFTW3 if possible) :
+     -D__FFTSG: Stefan Goedecker FFT (should always be there)
+     -D__FFTW3: FFTW version 3
+     -D__FFTW2: FFTW version 2
+     -D__FFTESSL: ESSL
+     -D__FFTMKL: mkl
+     -D__FFTACML: acml (interface known to be buggy)
+     various compilers/architectures needing their own machine_* file
+     -D__G95
+     -D__NAG
+     -D__AIX
+     -D__ABSOFT
+     -D__PGI
+     -D__INTEL
+     -D__GFORTRAN
+     -D__SX
+     -D__DEC
+     -D__XT3
+     with -D__GRID_CORE=X (with X=1..6) specific optimized core routines can
+                             be selected.  Reasonable defaults are provided
+                             (see src/lib/collocate_fast.F) but trial-and-error
+			     might yield (a small ~10%) speedup.
+     Some options controlling MPI behavior and capabilities:
+     -D__NO_MPI_THREAD_SUPPORT_CHECK  - Workaround for MPI libraries that do
+                             not declare they are thread safe but you want to
+                             use them with OpenMP code anyways.
+     -D__NO_MPI_MEMORY     - Do not use MPI memory allocation/deallocation
+                             routines.
+     And others...
+     -D__FFTSGL            - Use single precision FFT (unsure of status)
+
+ 3c) CP2K currently assumes full Fortran 95 compliance and expects the
+     ISO_C_BINDING module of Fortran 2003 to be present, which
+     commonly is available even in current compilers.  For OpenMP,
+     version 3.0 is assumed.
+
+     If you you get compilation errors about unsupported language
+     features, then some flags may be used to reduce the language
+     features required.
+
+     In addition, some flags are used to declare compiler support for
+     additional language features that the compiler supports.
+
+     Subparts of Fortran 2003 or later that help various aspects of the code:
+     -D__PTR_RANK_REMAP    - compiler supports pointer rank remapping
+     -D__HAS_NO_ISO_C_BINDING - compiler does not support all needed
+                             ISO_C_BINDING features. The default is to
+                             assume support.  (At least g95 0.91
+                             silently fails with segfaults since it
+                             does not support C_F_POINTER.)
+     Other language capabilities and support:
+     -D__HAS_NO_OMP_3      - CP2K assumes that compilers support OpenMP 3.0.
+                             If this is not the case specify this flag to
+                             compile.  Runtime performance will be poorer on
+                             low numbers of processors
+     -D__CRAY_POINTERS     - compiler supports CRAY pointers
+
+ 3d) Additional esoteric, development, and debugging options.  This
+     section can be safely skipped over.  Listed here just for
+     completeness besides the flags described in this document.
+     -D__USE_CP2K_TRACE     - The DBCSR library should use CP2K's stack &
+                              error tracing.  If enabled, add
+                              timings_mp.o to LIBS.
+     -D__NO_STATM_ACCESS    - Do not try to read from /proc/self/statm to
+                              get memory usage information.  This is
+                              otherwise attempted on several
+                              Linux-based architectures or using with
+                              the NAG, gfortran, and g95 compilers.
+     -D__mp_timeset__       - Timing of MPI routines.
+     -D__USE_LEGACY_WEIGHTS - Use legacy atomic weights (?)
+     -D__NO_ASSUMED_SIZE_NOCOPY_ASSUMPTION - Do not assume that
+                              assumed-sized dummy arguments will
+                              always be passed in by reference.
+                              Unless the ISO_C_BINDINGS is present,
+                              CP2K will not compile with this option.
+     -D__cray_pointers      - cray pointers will be be used in preference
+                              to the ISO_C_BINDINGS call to
+                              MPI_ALLOC_MEM.
+     -D__SGL                - use single precision as the default real type
+                              (abandoned, probably does not work)
+     -D__PLASMA             - plasma support for DBCSR (neglected, may not work)
+     -D__USE_PAT            - craypat profiling (?)
+     -D__HMD                - ?
+     -D__HPM                - ?
+     
+
+ 3e) The `I'm feeling lucky' version of building will try to guess what
+     architecture you're on.
+     Just type
+     > make sopt
+     and the script '~/cp2k/tools/get_arch_code' will try to guess your
+     architecture.  You can set the 'FORT_C_NAME' to indicate the compiler
+     part of the architecture string.
+     > export FORT_C_NAME=g95
+
+ 4) If things fail, take a break... have a look at section 3c and go back
+    to 3a (or skip to step 7).
+
+ 5) If your compiler/machine is really special, it shouldn't be too difficult
+    to support it.
+    Only ~/cp2k/src/machine*.F (and possibly src/dbcsr_lib/machine.F) should
+    be affected.
+
+ 6) If compilation works fine, you can run one of the test cases 
+    to try out the executable (most inputs in any of the cp2k/tests/*regtest*/
+    directories are tested on a daily basis).
+
+    >  cd ~/cp2k/tests/QS/
+    > ~/cp2k/exe/YOURMACHINE/cp2k.sopt C.inp
+
+    systematic testing can be done following the description on regtesting:
+    http://cp2k.berlios.de/regtest.html
+
+ 7) In any case please tell us your comments, praise, criticism, thanks, ...
+
+    you can sent email to the people in the team :
+
+    http://developer.berlios.de/project/memberlist.php?group_id=129
+
+ 8) A reference manual of CP2K can be found on the web:
+
+    http://cp2k.berlios.de/input/
+
+    or can be generated using the cp2k executable, see
+
+    http://cp2k.berlios.de/manual/generate_manual_howto.html
+
+
+ 9) Happy computing!
+
+ the CP2K team.

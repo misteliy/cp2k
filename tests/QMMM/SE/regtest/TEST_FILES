@@ -1,0 +1,27 @@
+# runs are executed in the same order as in this file
+# the second field tells which test should be run in order to compare with the last available output
+# e.g. 0 means do not compare anything, running is enough
+#      1 compares the last total energy in the file
+#      for details see cp2k/tools/do_regtest
+# QM/MM
+water_3.inp          2
+mol.inp              2
+h2_dbg_0.inp         2
+h2_dbg_1.inp         2
+h2_dbg_-2_2.inp      3
+h2_dbg_-2.inp        3 
+water_3_fdbg.inp     3
+water_3_fdbg_inv.inp 3 
+water_3_full.inp     7
+water_3_full_num.inp 7
+#QMMM Walls
+water_3_NOwalls.inp  2
+water_3_walls.inp    2
+water_3_walls_q.inp  2
+zwitt.inp            2
+#QMMM thermostat regions
+mol_CSVR_gen1.inp    2
+mol_CSVR_gen2.inp    2
+mol_CSVR_gen3.inp    2
+#Spherical cutoff
+mol_sph_cut.inp      2

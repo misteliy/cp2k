@@ -1,0 +1,62 @@
+# runs are executed in the same order as in this file
+# the second field tells which test should be run in order to compare with the last available output
+# e.g. 0 means do not compare anything, running is enough
+#      1 compares the last total energy in the file
+#      for details see cp2k/tools/do_regtest
+Ar.inp             1
+NO2_lsd.inp        1
+#Harris funcional 
+H2O-harris.inp     1
+H2O-MD-harris.inp  1
+#Force consistency via FDs
+H2O-Harris-Debug-SCF.inp 1
+H2O-Harris-Debug-NoSCF.inp 1
+#QS
+Ar-2.inp           1
+Ar-3.inp           1
+H2O_tddfpt.inp     0
+H2O-tddfpt-saop.inp 1
+Ar-4.inp           1
+Ar-5.inp           1
+pyridine.inp       1
+Ar-12.inp          1
+# these should in fact have all 'identical' energies
+Ar-6.inp           1
+Ar-7.inp           1
+Ar-8.inp           1
+# 
+Ar-9.inp           1
+Ar-10.inp          1
+Ar-11.inp          1
+# b97grimme and electronic kineitc energy
+Ar-13.inp          1
+# different pseudo style
+K2.inp             1
+H2.inp             1
+# printing of structure data
+H2O-geoopt.inp     1
+H2O-fixed.inp      1
+h2o_dip_berry.inp  17
+h2o_dip_iso.inp    17
+#pre-processor
+H2-inpp.inp        0
+# vdW correction
+vdW_PP_GRIMME.inp  33
+# core_ppl on grid
+core_pp_1.inp     1
+core_pp_2.inp     1
+# vdW correction
+vdW_PP_GRIMME_p1.inp 33
+vdW_PP_GRIMME_p2.inp 33
+# finer xc grids
+Ar-fine-1.inp 1
+# a basis none first kind
+H2O-none.inp 1
+# extended pseudopotentials
+h4.t1.inp 1
+h4.t2.inp 1
+h4.t3.inp 1
+h4.t4.inp 1
+h4.t5.inp 1
+h2.t1.inp 1
+h2.t2.inp 1

@@ -1,0 +1,59 @@
+# runs are executed in the same order as in this file
+# the second field tells which test should be run in order to compare with the last available output
+# e.g. 0 means do not compare anything, running is enough
+#      1 compares the last total energy in the file
+#      for details see cp2k/tools/do_regtest
+# some tests of restricted
+N3-1.inp           1
+N3-2.inp           1
+# some tests of SIC needs restarting from N3-1 for stability
+# teo: no need anymore due to the new way of handling the restart
+#      file. it's not overwritten anymore..
+N3-3.inp           1
+N3-4.inp           1
+N3-5.inp           1
+N3-6.inp           1
+N3-7.inp           1
+N3-8.inp           1
+N3-9.inp           1
+N3-10.inp          1
+# further sics
+H2O-sic-ad-1.inp   1
+H2O-sic-ad-2.inp   1
+# running H LSD
+H-1.inp            1
+H-2.inp            1
+# elec_conf
+H2O-1.inp          1
+# outer scf with FULL_ALL
+H2O.inp            1
+# different parallel distributions
+H2O-dist-1.inp     1
+H2O-dist-2.inp     1
+H2O-dist-3.inp     1
+H2O-dist-4.inp     1
+H2O-dist-5.inp     1
+H2O-dist-6.inp     1
+H2O-dist-7.inp     1
+H2O-dist-8.inp     1
+H2O-dist-9.inp     1
+H2O-dist-10.inp     1
+H2O-dist-11.inp     1
+H2O-dist-12.inp     1
+H2O-dist-13.inp     1
+H2O-dist-14.inp     1
+H2O-dist-15.inp     1
+H2O-dist-16.inp     1
+H2_trip.inp        1
+C-sic-1.inp        1
+C-sic-2.inp        1
+# ot with fractional occupations
+C_ot.inp           1
+# use of the fermi distribution
+C_fermi.inp        1
+Al_fermi.inp       1
+# go through planned FFTs, but don't check results, they will depend on the selected plan
+H2O-plan-2.inp     0
+H2O-plan-3.inp     0
+#broyden minimization
+H2O-broy.inp       1
