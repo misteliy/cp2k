@@ -14,7 +14,7 @@ AR       = ar -r
 
 CPPFLAGS = 
 DFLAGS   = -D__GFORTRAN -D__FFTSG -D__FFTW3 -D__LIBINT -D__HAS_NO_ISO_C_BINDING
-FCFLAGS  = -g -O3 -ffast-math -funroll-loops -ftree-vectorize -march=native -ffree-form $(DFLAGS) -I$(GFORTRAN_INC)
+FCFLAGS  = -g -O3 -fbounds-check -ffast-math -funroll-loops -ftree-vectorize -march=native -ffree-form $(DFLAGS) -I$(GFORTRAN_INC)
 LDFLAGS  = $(FCFLAGS) -L/users/vondele/LAPACK/ -L$(GFORTRAN_LIB)
 LIBS     = -llapack_gfortran_x86 -lblas_gfortran_x86 -lfftw3 $(GFORTRAN_LIB)/libint_wrapper.o -lderiv -lint -lstdc++
 
