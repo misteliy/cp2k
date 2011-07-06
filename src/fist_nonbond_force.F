@@ -97,7 +97,7 @@ CONTAINS
                                                 shell_present
     REAL(KIND=dp) :: alpha, beta, beta_a, beta_b, energy, fac_ei, fac_kind, &
       fac_vdw, fscalar, mm_radius_a, mm_radius_b, qcore_a, qcore_b, qeff_a, &
-      qeff_b, qshell_a, qshell_b, rab2, rab2_com, rab2_max
+      qeff_b, qshell_a, qshell_b, rab2, rab2_com, rab2_max, etot
     REAL(KIND=dp), DIMENSION(3)              :: cell_v, cvi, rab, rab_cc, &
                                                 rab_com, rab_cs, rab_sc, &
                                                 rab_ss
@@ -321,6 +321,7 @@ CONTAINS
              IF (use_virial) THEN
                pv_com(:,:) = 0.0_dp
              END IF
+             etot = 0.0_dp
              IF (shell_type /= nosh_nosh) THEN
                 ! do shell
                 IF ((rab2_com <= rab2_max).AND.all_terms) THEN
@@ -355,6 +356,7 @@ CONTAINS
                               fcore_nonbond, fcore_nonbond, use_virial, pv_com)
                       END IF
                       pot_nonbond = pot_nonbond + energy
+                      etot = etot + energy
                    END IF
           
                    IF (shell_type == sh_sh) THEN
@@ -365,6 +367,7 @@ CONTAINS
                       IF (fac_vdw>0) THEN
                          energy = potential_s(spline_data,rab2,fscalar,spl_f,logger)
                          pot_nonbond = pot_nonbond + energy*fac_vdw
+                         etot = etot + energy*fac_vdw
                          fscalar = fscalar*fac_vdw
                       END IF
                       IF (fac_ei>0) THEN
@@ -374,6 +377,7 @@ CONTAINS
                                   beta, &
                                   ei_interaction_cutoffs(3, kind_a, kind_b))
                          pot_nonbond = pot_nonbond + energy
+                         etot = etot + energy
                       END IF
                       CALL add_force_nonbond(shell_a, shell_b, fscalar, rab, &
                            fshell_nonbond, fshell_nonbond, use_virial, pv_com)
@@ -389,6 +393,7 @@ CONTAINS
                                   beta_b, &
                                   ei_interaction_cutoffs(2, kind_b, kind_a))
                          pot_nonbond = pot_nonbond + energy
+                         etot = etot + energy
                          CALL add_force_nonbond(shell_a, shell_b, fscalar, rab, &
                               fcore_nonbond, fshell_nonbond, use_virial, pv_com)
 
@@ -401,6 +406,7 @@ CONTAINS
                                   beta_a, &
                                   ei_interaction_cutoffs(2, kind_a, kind_b))
                          pot_nonbond = pot_nonbond + energy
+                         etot = etot + energy
                          CALL add_force_nonbond(shell_a, shell_b, fscalar, rab, &
                               fshell_nonbond, fcore_nonbond, use_virial, pv_com)
                       END IF
@@ -412,6 +418,7 @@ CONTAINS
                       IF (fac_vdw>0) THEN
                          energy = potential_s(spline_data,rab2,fscalar,spl_f,logger)
                          pot_nonbond = pot_nonbond + energy*fac_vdw
+                         etot = etot + energy*fac_vdw
                          fscalar = fscalar*fac_vdw
                       END IF
                       IF (fac_ei>0) THEN
@@ -421,6 +428,7 @@ CONTAINS
                                   beta, &
                                   ei_interaction_cutoffs(3, kind_a, kind_b))
                          pot_nonbond = pot_nonbond + energy
+                         etot = etot + energy
                       END IF
                       CALL add_force_nonbond(atom_a, shell_b, fscalar, rab, &
                            f_nonbond, fshell_nonbond, use_virial, pv_com)
@@ -432,6 +440,7 @@ CONTAINS
                       IF (fac_vdw>0) THEN
                          energy = potential_s(spline_data,rab2,fscalar,spl_f,logger)
                          pot_nonbond = pot_nonbond + energy*fac_vdw
+                         etot = etot + energy*fac_vdw
                          fscalar = fscalar*fac_vdw
                       END IF
                       IF (fac_ei>0) THEN
@@ -441,6 +450,7 @@ CONTAINS
                                   beta, &
                                   ei_interaction_cutoffs(3, kind_a, kind_b))
                          pot_nonbond = pot_nonbond + energy
+                         etot = etot + energy
                       END IF
                       CALL add_force_nonbond(shell_a, atom_b, fscalar, rab, &
                            fshell_nonbond, f_nonbond, use_virial, pv_com)
@@ -456,6 +466,7 @@ CONTAINS
                    IF (fac_vdw>0) THEN
                       energy = potential_s(spline_data,rab2,fscalar,spl_f,logger)
                       pot_nonbond = pot_nonbond + energy*fac_vdw
+                      etot = etot + energy*fac_vdw
                       fscalar = fscalar*fac_vdw
                    END IF
                    IF (fac_ei>0) THEN
@@ -465,16 +476,26 @@ CONTAINS
                                beta, &
                                ei_interaction_cutoffs(3, kind_a, kind_b))
                       pot_nonbond = pot_nonbond + energy
+                      etot = etot + energy
                    END IF
                    CALL add_force_nonbond(atom_a, atom_b, fscalar, rab, &
                         f_nonbond, f_nonbond, use_virial, pv_com)
                 END IF
              END IF
              IF (use_virial) THEN
-               ! Add the contribution of the current pair to the total pressure
-               ! tensor.
+               ! Add the contribution of the current pair to the total pressure tensor.
                pv_nonbond = pv_nonbond + pv_com
              END IF
+             IF (atprop_env%energy) THEN
+               ! Atomic energies
+               atprop_env%atener(atom_a) = atprop_env%atener(atom_a) + 0.5_dp*etot
+               atprop_env%atener(atom_b) = atprop_env%atener(atom_b) + 0.5_dp*etot
+             ENDIF
+             IF (atprop_env%stress) THEN
+               ! Atomic stress tensors
+               atprop_env%atstress(:,:,atom_a) = atprop_env%atstress(:,:,atom_a) + 0.5_dp*pv_com
+               atprop_env%atstress(:,:,atom_b) = atprop_env%atstress(:,:,atom_b) + 0.5_dp*pv_com
+             ENDIF
           END DO Pairs
        END DO Kind_Group_Loop
     END DO Lists

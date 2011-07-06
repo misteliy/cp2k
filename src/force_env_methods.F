@@ -175,7 +175,7 @@ CONTAINS
     LOGICAL                                  :: calculate_forces, &
                                                 energy_consistency, eval_ef, &
                                                 failure, my_skip
-    REAL(kind=dp)                            :: e_pot
+    REAL(kind=dp)                            :: e_pot, pvtot
     REAL(kind=dp), DIMENSION(3)              :: grand_total_force, total_force
     REAL(kind=dp), DIMENSION(:), POINTER     :: pos
     TYPE(cell_type), POINTER                 :: cell
@@ -352,8 +352,11 @@ CONTAINS
 
     !atomic properties
     IF (atprop_env%energy) THEN
+       write(6,*) "ENERGY ",SUM(atprop_env%atener(:))
     END IF
     IF (atprop_env%stress) THEN
+       pvtot = SUM(virial%pv_virial(:,:))
+       write(6,*) "STRESS ",SUM(atprop_env%atstress(:,:,:)),pvtot
     END IF
 
   END SUBROUTINE force_env_calc_energy_force

@@ -534,7 +534,7 @@ CONTAINS
             pot_torsion, pot_imptors, pot_opbend, pot_shell, pv_bond, pv_bend, &
             pv_urey_bradley, pv_torsion, pv_imptors, pv_opbend, &
             debug%f_bond, debug%f_bend, debug%f_torsion, debug%f_ub, &
-            debug%f_imptors, debug%f_opbend, cell, use_virial, &
+            debug%f_imptors, debug%f_opbend, cell, use_virial, atprop_env, &
             error)
 
     ELSE
@@ -543,7 +543,7 @@ CONTAINS
             core_particle_set, pot_bond, pot_bend, pot_urey_bradley, &
             pot_torsion, pot_imptors, pot_opbend, pot_shell, pv_bond, pv_bend, &
             pv_urey_bradley, pv_torsion, pv_imptors, pv_opbend, &
-            cell=cell, use_virial=use_virial, error=error)
+            cell=cell, use_virial=use_virial, atprop_env=atprop_env, error=error)
     ENDIF
 
     IF(iw>0)THEN
