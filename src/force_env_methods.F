@@ -186,6 +186,7 @@ CONTAINS
     TYPE(particle_list_type), POINTER        :: core_particles, particles, &
                                                 shell_particles
     TYPE(virial_type), POINTER               :: virial
+    REAL(kind=dp),DIMENSION(:),ALLOCATABLE   :: test
 
     NULLIFY (logger,results)
     logger => cp_error_get_logger(error)
@@ -355,8 +356,12 @@ CONTAINS
        write(6,*) "ENERGY ",SUM(atprop_env%atener(:))
     END IF
     IF (atprop_env%stress) THEN
+       ALLOCATE(test(nat))
+!       call mp_sum(vtprop_env%atstress(:,:,),force_env%para_env%group)
        pvtot = SUM(virial%pv_virial(:,:))
        write(6,*) "STRESS ",SUM(atprop_env%atstress(:,:,:)),pvtot
+       test = (atprop_env%atstress(1,1,:)+atprop_env%atstress(2,2,:))/2-atprop_env%atstress(3,3,:) 
+       write(111,*) "P_n - P_l",test(:)
     END IF
 
   END SUBROUTINE force_env_calc_energy_force
