@@ -24,7 +24,8 @@ MODULE force_env_methods
                                              compare_cells,&
                                              init_cell,&
                                              real_to_scaled,&
-                                             scaled_to_real
+                                             scaled_to_real,&
+                                             pbc
   USE constraint_fxd,                  ONLY: fix_atom_control
   USE constraint_vsite,                ONLY: vsite_force_control
   USE cp_iter_types,                   ONLY: cp_iteration_info_copy_iter
@@ -171,22 +172,24 @@ CONTAINS
       routineP = moduleN//':'//routineN
 
     INTEGER                                  :: nat, ndigits, output_unit, &
-                                                print_forces, stat
+                                                print_forces, stat,n,i,st
     LOGICAL                                  :: calculate_forces, &
                                                 energy_consistency, eval_ef, &
                                                 failure, my_skip
-    REAL(kind=dp)                            :: e_pot, pvtot
-    REAL(kind=dp), DIMENSION(3)              :: grand_total_force, total_force
-    REAL(kind=dp), DIMENSION(:), POINTER     :: pos
+    REAL(kind=dp)                            :: e_pot, pvtot  
+    REAL(kind=dp), DIMENSION(3)              :: grand_total_force, total_force, &
+                                                blabla
+    REAL(kind=dp), DIMENSION(:), POINTER     :: pos,high_z,bla
     TYPE(cell_type), POINTER                 :: cell
     TYPE(cp_logger_type), POINTER            :: logger
     TYPE(atprop_type), POINTER               :: atprop_env
     TYPE(cp_result_type), POINTER            :: results
     TYPE(cp_subsys_type), POINTER            :: subsys
+    TYPE(particle_type), POINTER             :: particle_set(:)
     TYPE(particle_list_type), POINTER        :: core_particles, particles, &
                                                 shell_particles
     TYPE(virial_type), POINTER               :: virial
-    REAL(kind=dp),DIMENSION(:),ALLOCATABLE   :: test
+    REAL(kind=dp),DIMENSION(:),ALLOCATABLE   :: test,test_histo
 
     NULLIFY (logger,results)
     logger => cp_error_get_logger(error)
@@ -220,7 +223,8 @@ CONTAINS
           CASE ( use_fist_force )
              CALL fist_force_control( force_env%fist_env, virial, atprop_env, force_env%para_env, &
                   force_env_section=force_env%force_env_section, error=error)
-             CALL fist_env_get(fist_env=force_env%fist_env,results=results,error=error)
+             CALL fist_env_get(fist_env=force_env%fist_env,results=results, &
+                  particle_set=particle_set,error=error)
           CASE (use_ep_force)
              CALL ep_env_calc_e_f(force_env%ep_env,calculate_forces,error=error)
           CASE ( use_qs_force )
@@ -356,12 +360,30 @@ CONTAINS
        write(6,*) "ENERGY ",SUM(atprop_env%atener(:))
     END IF
     IF (atprop_env%stress) THEN
+       if (.not. allocated(test_histo)) then 
+            allocate(test_histo(200)) 
+            print *, 'nono'
+            test_histo = 0.0d0
+       end if
+
        ALLOCATE(test(nat))
+       high_z => particle_set(:)%r(3) 
 !       call mp_sum(vtprop_env%atstress(:,:,),force_env%para_env%group)
        pvtot = SUM(virial%pv_virial(:,:))
        write(6,*) "STRESS ",SUM(atprop_env%atstress(:,:,:)),pvtot
        test = (atprop_env%atstress(1,1,:)+atprop_env%atstress(2,2,:))/2-atprop_env%atstress(3,3,:) 
-       write(111,*) "P_n - P_l",test(:)
+       do n = 1,nat
+!            i = floor(high_z(n)*0.529177249)
+!            blabla = pbc(particle_set(n)%r,cell)
+            i = CEILING(abs(high_z(n))*0.529177249)
+            test_histo(i) = test_histo(i) + test(n)
+       end do 
+       open(111,file='test_histo', iostat=st)
+       do n = 1,100
+          write(111,*) n,test_histo(n)
+       end do
+       close(111)
+       DEALLOCATE(test) 
     END IF
 
   END SUBROUTINE force_env_calc_energy_force
