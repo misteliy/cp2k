@@ -177,9 +177,10 @@ CONTAINS
                                                 energy_consistency, eval_ef, &
                                                 failure, my_skip
     REAL(kind=dp)                            :: e_pot, pvtot  
-    REAL(kind=dp), DIMENSION(3)              :: grand_total_force, total_force, &
-                                                blabla
-    REAL(kind=dp), DIMENSION(:), POINTER     :: pos,high_z,bla
+    REAL(kind=dp), DIMENSION(3)              :: grand_total_force, total_force,&
+                                                tmp_coord
+    REAL(kind=dp), DIMENSION(:), POINTER     :: pos,histo
+    REAL(kind=dp), DIMENSION(:),ALLOCATABLE  :: pn_pl,high_z
     TYPE(cell_type), POINTER                 :: cell
     TYPE(cp_logger_type), POINTER            :: logger
     TYPE(atprop_type), POINTER               :: atprop_env
@@ -189,7 +190,6 @@ CONTAINS
     TYPE(particle_list_type), POINTER        :: core_particles, particles, &
                                                 shell_particles
     TYPE(virial_type), POINTER               :: virial
-    REAL(kind=dp),DIMENSION(:),ALLOCATABLE   :: test,test_histo
 
     NULLIFY (logger,results)
     logger => cp_error_get_logger(error)
@@ -213,7 +213,7 @@ CONTAINS
     IF (virial%pv_availability) CALL zero_virial(virial,reset=.FALSE.)
 
     NULLIFY (atprop_env)
-    CALL force_env_get(force_env,atprop_env=atprop_env,error=error)
+    CALL force_env_get(force_env,atprop_env=atprop_env,cell=cell,error=error)
     nat=force_env_get_natom(force_env,error=error)
     CALL atprop_init(atprop_env,nat,error)
 
@@ -360,30 +360,40 @@ CONTAINS
        write(6,*) "ENERGY ",SUM(atprop_env%atener(:))
     END IF
     IF (atprop_env%stress) THEN
-       if (.not. allocated(test_histo)) then 
-            allocate(test_histo(200)) 
-            print *, 'nono'
-            test_histo = 0.0d0
-       end if
-
-       ALLOCATE(test(nat))
-       high_z => particle_set(:)%r(3) 
-!       call mp_sum(vtprop_env%atstress(:,:,),force_env%para_env%group)
-       pvtot = SUM(virial%pv_virial(:,:))
-       write(6,*) "STRESS ",SUM(atprop_env%atstress(:,:,:)),pvtot
-       test = (atprop_env%atstress(1,1,:)+atprop_env%atstress(2,2,:))/2-atprop_env%atstress(3,3,:) 
+       allocate(pn_pl(nat),high_z(nat))
+       histo => virial%pv_profile
+       ! periodic boundary :/ is that necessary?
        do n = 1,nat
-!            i = floor(high_z(n)*0.529177249)
-!            blabla = pbc(particle_set(n)%r,cell)
-            i = CEILING(abs(high_z(n))*0.529177249)
-            test_histo(i) = test_histo(i) + test(n)
-       end do 
-       open(111,file='test_histo', iostat=st)
-       do n = 1,100
-          write(111,*) n,test_histo(n)
+       tmp_coord = pbc(particle_set(n)%r,cell)
+            if (tmp_coord(3) .lt. 0) then
+                high_z(n) = cell%hmat(3,3) + tmp_coord(3)
+            else
+                high_z(n) = tmp_coord(3)
+            end if
        end do
-       close(111)
-       DEALLOCATE(test) 
+
+!       call mp_sum(vtprop_env%atstress(:,:,),force_env%para_env%group)
+
+       pvtot = SUM(virial%pv_virial(:,:))
+
+       write(6,*) "STRESS ",SUM(atprop_env%atstress(:,:,:)),pvtot
+       pn_pl = (atprop_env%atstress(1,1,:)+atprop_env%atstress(2,2,:))/2-atprop_env%atstress(3,3,:) 
+       
+       ! calculate pressure profile (histogram) 
+       do n = 1,nat
+            i = CEILING(abs(high_z(n))*0.529177249)
+            if (i < 100 ) then
+            histo(i) = histo(i) + pn_pl(n)
+            endif
+       end do 
+
+!       open(111,file='test_high', position='append',iostat=st)
+!       do n = 1,100 
+!          write(111,*) tmp(3,:)*0.529177249
+!       end do
+!       close(111)
+
+       DEALLOCATE(pn_pl,high_z) 
     END IF
 
   END SUBROUTINE force_env_calc_energy_force

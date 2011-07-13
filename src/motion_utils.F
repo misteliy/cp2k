@@ -43,8 +43,8 @@ MODULE motion_utils
 
   PRIVATE
 
-  PUBLIC :: write_trajectory, write_stress_tensor, write_simulation_cell,&
-            get_output_format, rot_ana
+  PUBLIC :: write_trajectory, write_stress_tensor,write_stress_profile,& 
+            write_simulation_cell,get_output_format, rot_ana
 
   CHARACTER(len=*), PARAMETER, PRIVATE :: moduleN = 'motion_utils'
   REAL(KIND=dp), PARAMETER, PUBLIC     :: thrs_motion = 1.0E4_dp*EPSILON(0.0_dp)
@@ -394,6 +394,10 @@ CONTAINS
     END IF
   END SUBROUTINE get_output_format
 
+
+
+
+
 ! *****************************************************************************
 !> \brief   Prints the Stress Tensor
 !> \author  Teodoro Laino [tlaino] - University of Zurich
@@ -464,6 +468,69 @@ CONTAINS
     END IF
 
   END SUBROUTINE write_stress_tensor
+
+! *****************************************************************************
+!> \brief   Prints the Stress Profile
+!> \author  Yannick Misteli - University of Zurich
+!> \date    07.2011
+!> \version 1.0
+! *****************************************************************************
+  SUBROUTINE write_stress_profile(virial,cell,motion_section,itimes,time,pos,&
+                                 act,error)
+
+    TYPE(virial_type), POINTER               :: virial
+    TYPE(cell_type), POINTER                 :: cell
+    TYPE(section_vals_type), POINTER         :: motion_section
+    INTEGER, INTENT(IN)                      :: itimes
+    REAL(KIND=dp), INTENT(IN)                :: time
+    CHARACTER(LEN=default_string_length), &
+      INTENT(IN), OPTIONAL                   :: pos, act
+    TYPE(cp_error_type), INTENT(inout)       :: error
+
+    CHARACTER(LEN=*), PARAMETER :: routineN = 'write_stress_tensor', &
+      routineP = moduleN//':'//routineN
+
+    CHARACTER(LEN=default_string_length)     :: my_act, my_pos
+    INTEGER                                  :: output_unit
+    LOGICAL                                  :: new_file
+    REAL(KIND=dp), DIMENSION(3, 3)           :: pv_total_bar
+    TYPE(cp_logger_type), POINTER            :: logger
+
+    NULLIFY (logger)
+    logger => cp_error_get_logger(error)
+
+    IF (virial%pv_availability) THEN
+      my_pos = "APPEND"
+      my_act = "WRITE"
+      IF (PRESENT(pos)) my_pos = pos
+      IF (PRESENT(act)) my_act = act
+      output_unit = cp_print_key_unit_nr(logger,motion_section,"PRINT%STRESS",&
+                                 extension=".stress_profile",file_position=my_pos,&
+                                 file_action=my_act,file_form="FORMATTED",&
+                                 is_new_file=new_file,error=error)
+    ELSE
+      output_unit = 0
+    END IF
+
+    IF (output_unit > 0) THEN
+      IF (new_file) THEN
+        WRITE (UNIT=output_unit,FMT='(I8,F12.3,9(1X,F19.10))')
+          
+      END IF
+
+      WRITE (UNIT=output_unit,FMT=*) virial%pv_profile(:)
+        
+
+      CALL m_flush(output_unit)
+    END IF
+
+    IF (virial%pv_availability) THEN
+      CALL cp_print_key_finished_output(output_unit,logger,motion_section,&
+                                        "PRINT%STRESS",error=error)
+    END IF
+
+  END SUBROUTINE write_stress_profile
+
 
 ! *****************************************************************************
 !> \brief   Prints the Simulation Cell

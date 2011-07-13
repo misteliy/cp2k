@@ -61,6 +61,7 @@ MODULE md_energies
                                              set_md_env
   USE motion_utils,                    ONLY: write_simulation_cell,&
                                              write_stress_tensor,&
+                                             write_stress_profile,&
                                              write_trajectory
   USE particle_list_types,             ONLY: particle_list_type
   USE particle_types,                  ONLY: write_structure_data
@@ -483,6 +484,11 @@ CONTAINS
        ! Print Stress Tensor
        CALL write_stress_tensor(virial, cell, motion_section, itimes, time*femtoseconds,&
             my_pos, my_act, error)
+
+       ! Print Stress Profile
+       CALL write_stress_profile(virial, cell, motion_section, itimes, time*femtoseconds,&
+                   my_pos, my_act, error)
+
 
        ! Temperature per Kinds
        IF(simpar%temperature_per_kind) THEN
