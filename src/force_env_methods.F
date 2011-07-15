@@ -381,10 +381,10 @@ CONTAINS
        
        ! calculate pressure profile (histogram) 
        do n = 1,nat
-            i = CEILING(abs(high_z(n))*0.529177249)
-            if (i < 100 ) then
+            i = CEILING(high_z(n)*0.529177249)
+!            if (i < 100 ) then
             histo(i) = histo(i) + pn_pl(n)
-            endif
+!            endif
        end do 
 
 !       open(111,file='test_high', position='append',iostat=st)
