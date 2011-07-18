@@ -1,0 +1,14 @@
+# tested with gcc 4.4.0
+CC       = cc
+CPP      =
+FC       = ftn                         
+LD       = ftn                     
+AR       = ar -r
+CPPFLAGS =
+DFLAGS   = -D__GFORTRAN -D__FFTSG -D__parallel -D__SCALAPACK -D__BLACS -D__FFTW3
+FCFLAGS  = -g -O3 -ffast-math -funroll-loops -ftree-vectorize -march=native -ffree-form $(DFLAGS) -I$(GFORTRAN_INC)
+LDFLAGS  = $(FCFLAGS)
+LIBS     = -lsci -lfftw3 -lstdc++
+
+OBJECTS_ARCHITECTURE = machine_gfortran.o
+

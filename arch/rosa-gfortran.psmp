@@ -1,0 +1,45 @@
+#
+# setup on rosa:
+# module swap PrgEnv-pgi/2.2.21A PrgEnv-gnu/2.2.21A
+# module swap gcc gcc/4.3.2
+# module swap xt-libsci xt-libsci/10.3.4
+# module load fftw/3.2.1
+#
+#
+# profiling modules
+# module load apprentice2/4.4.0
+# module load xt-craypat/4.4.1
+#
+
+CC       = cc
+CPP      =
+FC       = ftn
+LD       = ftn
+AR       = ar -r
+CPPFLAGS =
+DFLAGS   = -D__GFORTRAN -D__FFTSG -D__LIBINT -D__parallel -D__SCALAPACK -D__BLACS -D__FFTW3 -D__MAX_CONTR=3
+FCFLAGS  = -fopenmp -g -O3 -ffast-math -funroll-loops -ftree-vectorize -march=native -ffree-form $(DFLAGS) -I$(GFORTRAN_INC) 
+LDFLAGS  = $(FCFLAGS) -v
+LIBS = /users/vondele/rosa/cp2k/libint_tools/libint_cpp_wrapper.o /users/vondele/rosa/cp2k/libint/lib/libderiv.a /users/vondele/rosa/cp2k/libint/lib/libint.a -lfftw3 -lstdc++ -Wl,--whole-archive -lpthread -Wl,--no-whole-archive
+
+#
+# sci (crashes)
+#
+#LIBS     = /users/vondele/rosa/cp2k/libint_tools/libint_cpp_wrapper.o /users/vondele/rosa/cp2k/libint/lib/libderiv.a /users/vondele/rosa/cp2k/libint/lib/libint.a -lsci -lfftw3 -lstdc++ -Wl,--whole-archive -lpthread -Wl,--no-whole-archive
+#
+# netlib (slow)
+#
+#LIBS     = /users/vondele/rosa/cp2k/libint_tools/libint_cpp_wrapper.o /users/vondele/rosa/cp2k/libint/lib/libderiv.a /users/vondele/rosa/cp2k/libint/lib/libint.a /users/vondele/rosa/scalapack/scalapack_installer_0.94/lib/libscalapack.a /users/vondele/rosa/scalapack/scalapack_installer_0.94/lib/blacsF77.a /users/vondele/rosa/scalapack/scalapack_installer_0.94/lib/blacs.a /users/vondele/rosa/scalapack/scalapack_installer_0.94/lib/libreflapack.a /users/vondele/rosa/scalapack/scalapack_installer_0.94/lib/librefblas.a   -lfftw3 -lstdc++ -Wl,--whole-archive -lpthread -Wl,--no-whole-archive
+#
+# acml
+#
+#LIBS     = /users/vondele/rosa/cp2k/libint_tools/libint_cpp_wrapper.o /users/vondele/rosa/cp2k/libint/lib/libderiv.a /users/vondele/rosa/cp2k/libint/lib/libint.a /users/vondele/rosa/scalapack/scalapack_installer_0.94/lib/libscalapack.a /users/vondele/rosa/scalapack/scalapack_installer_0.94/lib/blacsF77.a /users/vondele/rosa/scalapack/scalapack_installer_0.94/lib/blacs.a /opt/acml/4.3.0/gfortran64/lib/libacml.a -lfftw3 -lstdc++ -Wl,--whole-archive -lpthread -Wl,--no-whole-archive
+#
+# atlas (seems fine but not with cray_pat)
+#
+#LIBS     = /users/vondele/rosa/cp2k/libint_tools/libint_cpp_wrapper.o /users/vondele/rosa/cp2k/libint/lib/libderiv.a /users/vondele/rosa/cp2k/libint/lib/libint.a /users/vondele/rosa/scalapack/scalapack_installer_0.94/lib/libscalapack.a /users/vondele/rosa/scalapack/scalapack_installer_0.94/lib/blacsF77.a /users/vondele/rosa/scalapack/scalapack_installer_0.94/lib/blacs.a /users/vondele/rosa/scalapack/scalapack_installer_0.94/lib/libreflapack.a /opt/acml/4.2.0/gfortran64_mp/lib/libacml_mp.a -lfftw3 -lstdc++ -Wl,--whole-archive -lpthread -Wl,--no-whole-archive
+
+#LIBS     = /users/vondele/rosa/cp2k/libint_tools/libint_cpp_wrapper.o /users/vondele/rosa/cp2k/libint/lib/libderiv.a /users/vondele/rosa/cp2k/libint/lib/libint.a /users/vondele/rosa/scalapack/scalapack_installer_0.94/lib/libscalapack.a /users/vondele/rosa/scalapack/scalapack_installer_0.94/lib/blacsF77.a /users/vondele/rosa/scalapack/scalapack_installer_0.94/lib/blacs.a /users/vondele/rosa/scalapack/scalapack_installer_0.94/lib/libreflapack.a /opt/acml/4.2.0/gfortran64_mp/lib/libacml_mp.a -lfftw3 -lstdc++
+
+OBJECTS_ARCHITECTURE = machine_gfortran.o
+
