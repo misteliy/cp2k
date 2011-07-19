@@ -10,16 +10,8 @@
 !> \author JHU
 ! *****************************************************************************
 MODULE atprop_types
-  USE cp_para_types,                   ONLY: cp_para_env_type
   USE f77_blas
-  USE input_section_types,             ONLY: section_vals_release,&
-                                             section_vals_retain,&
-                                             section_vals_type,&
-                                             section_vals_val_get
-  USE kinds,                           ONLY: default_path_length,&
-                                             dp
-  USE timings,                         ONLY: timeset,&
-                                             timestop
+  USE kinds,                           ONLY: dp
 #include "cp_common_uses.h"
 
   IMPLICIT NONE
@@ -38,6 +30,7 @@ TYPE atprop_type
    LOGICAL                                   :: energy
    LOGICAL                                   :: stress
    REAL(KIND=dp), DIMENSION(:), POINTER      :: atener
+   REAL(KIND=dp), DIMENSION(:), POINTER      :: atecc
    REAL(KIND=dp), DIMENSION(:,:,:), POINTER  :: atstress
 END TYPE atprop_type
 
@@ -67,7 +60,7 @@ CONTAINS
     INTEGER, INTENT(IN)                      :: natom
     TYPE(cp_error_type), INTENT(inout)       :: error
 
-    CHARACTER(len=*), PARAMETER :: routineN = 'atprop_create', &
+    CHARACTER(len=*), PARAMETER :: routineN = 'atprop_init', &
       routineP = moduleN//':'//routineN
 
     INTEGER                                  :: stat
@@ -85,6 +78,7 @@ CONTAINS
     END IF
     atprop_env%atener = 0._dp
   END IF
+  NULLIFY(atprop_env%atecc)
 
   IF(atprop_env%stress) THEN
     IF(ASSOCIATED(atprop_env%atstress)) THEN
@@ -119,6 +113,10 @@ SUBROUTINE atprop_release(atprop_env,error)
   IF (ASSOCIATED(atprop_env)) THEN
      IF (ASSOCIATED(atprop_env%atener)) THEN
         DEALLOCATE(atprop_env%atener,stat=stat)
+        CPPostcondition(stat==0,cp_warning_level,routineP,error,failure)
+     END IF
+     IF (ASSOCIATED(atprop_env%atecc)) THEN
+        DEALLOCATE(atprop_env%atecc,stat=stat)
         CPPostcondition(stat==0,cp_warning_level,routineP,error,failure)
      END IF
      IF (ASSOCIATED(atprop_env%atstress)) THEN

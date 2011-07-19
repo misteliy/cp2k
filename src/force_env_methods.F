@@ -24,8 +24,7 @@ MODULE force_env_methods
                                              compare_cells,&
                                              init_cell,&
                                              real_to_scaled,&
-                                             scaled_to_real,&
-                                             pbc
+                                             scaled_to_real
   USE constraint_fxd,                  ONLY: fix_atom_control
   USE constraint_vsite,                ONLY: vsite_force_control
   USE cp_iter_types,                   ONLY: cp_iteration_info_copy_iter
@@ -123,7 +122,8 @@ MODULE force_env_methods
   USE qs_energy,                       ONLY: qs_energies
   USE qs_environment_types,            ONLY: get_qs_env,&
                                              qs_env_retain,&
-                                             qs_environment_type
+                                             qs_environment_type,&
+                                             set_qs_env
   USE qs_force,                        ONLY: qs_forces
   USE qs_ks_qmmm_methods,              ONLY: ks_qmmm_env_rebuild
   USE restraint,                       ONLY: restraint_control
@@ -172,21 +172,19 @@ CONTAINS
       routineP = moduleN//':'//routineN
 
     INTEGER                                  :: nat, ndigits, output_unit, &
-                                                print_forces, stat,n,i,st
+                                                print_forces, stat
     LOGICAL                                  :: calculate_forces, &
                                                 energy_consistency, eval_ef, &
                                                 failure, my_skip
-    REAL(kind=dp)                            :: e_pot, pvtot  
-    REAL(kind=dp), DIMENSION(3)              :: grand_total_force, total_force,&
-                                                tmp_coord
-    REAL(kind=dp), DIMENSION(:), POINTER     :: pos,histo
-    REAL(kind=dp), DIMENSION(:),ALLOCATABLE  :: pn_pl,high_z
+    REAL(kind=dp)                            :: e_pot, pvtot
+    REAL(kind=dp), PARAMETER                 :: ateps=1.e-3_dp 
+    REAL(kind=dp), DIMENSION(3)              :: grand_total_force, total_force
+    REAL(kind=dp), DIMENSION(:), POINTER     :: pos
+    TYPE(atprop_type), POINTER               :: atprop_env
     TYPE(cell_type), POINTER                 :: cell
     TYPE(cp_logger_type), POINTER            :: logger
-    TYPE(atprop_type), POINTER               :: atprop_env
     TYPE(cp_result_type), POINTER            :: results
     TYPE(cp_subsys_type), POINTER            :: subsys
-    TYPE(particle_type), POINTER             :: particle_set(:)
     TYPE(particle_list_type), POINTER        :: core_particles, particles, &
                                                 shell_particles
     TYPE(virial_type), POINTER               :: virial
@@ -213,7 +211,7 @@ CONTAINS
     IF (virial%pv_availability) CALL zero_virial(virial,reset=.FALSE.)
 
     NULLIFY (atprop_env)
-    CALL force_env_get(force_env,atprop_env=atprop_env,cell=cell,error=error)
+    CALL force_env_get(force_env,atprop_env=atprop_env,error=error)
     nat=force_env_get_natom(force_env,error=error)
     CALL atprop_init(atprop_env,nat,error)
 
@@ -223,16 +221,16 @@ CONTAINS
           CASE ( use_fist_force )
              CALL fist_force_control( force_env%fist_env, virial, atprop_env, force_env%para_env, &
                   force_env_section=force_env%force_env_section, error=error)
-             CALL fist_env_get(fist_env=force_env%fist_env,results=results, &
-                  particle_set=particle_set,error=error)
+             CALL fist_env_get(fist_env=force_env%fist_env,results=results,error=error)
           CASE (use_ep_force)
              CALL ep_env_calc_e_f(force_env%ep_env,calculate_forces,error=error)
           CASE ( use_qs_force )
+             CALL set_qs_env(qs_env=force_env%qs_env,atprop=atprop_env,error=error)         
              IF (.NOT.calculate_forces) THEN
                 CALL qs_energies(qs_env=force_env%qs_env, consistent_energies=energy_consistency, &
                      calc_forces=calculate_forces, error=error)
              ELSE
-                CALL qs_forces(force_env%qs_env,force_env%globenv, error=error)
+                CALL qs_forces(force_env%qs_env, force_env%globenv, error=error)
              END IF
              CALL get_qs_env(qs_env=force_env%qs_env,results=results,error=error)         
           CASE (use_eip_force)
@@ -357,43 +355,18 @@ CONTAINS
 
     !atomic properties
     IF (atprop_env%energy) THEN
-       write(6,*) "ENERGY ",SUM(atprop_env%atener(:))
+       CALL force_env_get(force_env, potential_energy=e_pot, error=error)
+       WRITE(6,*) 
+       WRITE(6,*) "ENERGY (ATOMIC) :",SUM(atprop_env%atener(:))
+       WRITE(6,*) "ENERGY (TOTAL)  :",e_pot
+       CPPostcondition(ABS(e_pot-SUM(atprop_env%atener(:)))<ateps,cp_fatal_level,routineP,error,failure)
     END IF
     IF (atprop_env%stress) THEN
-       allocate(pn_pl(nat),high_z(nat))
-       histo => virial%pv_profile
-       ! periodic boundary :/ is that necessary?
-       do n = 1,nat
-       tmp_coord = pbc(particle_set(n)%r,cell)
-            if (tmp_coord(3) .lt. 0) then
-                high_z(n) = cell%hmat(3,3) + tmp_coord(3)
-            else
-                high_z(n) = tmp_coord(3)
-            end if
-       end do
-
-!       call mp_sum(vtprop_env%atstress(:,:,),force_env%para_env%group)
-
        pvtot = SUM(virial%pv_virial(:,:))
-
-       write(6,*) "STRESS ",SUM(atprop_env%atstress(:,:,:)),pvtot
-       pn_pl = (atprop_env%atstress(1,1,:)+atprop_env%atstress(2,2,:))/2-atprop_env%atstress(3,3,:) 
-       
-       ! calculate pressure profile (histogram) 
-       do n = 1,nat
-            i = CEILING(high_z(n)*0.529177249)
-!            if (i < 100 ) then
-            histo(i) = histo(i) + pn_pl(n)
-!            endif
-       end do 
-
-!       open(111,file='test_high', position='append',iostat=st)
-!       do n = 1,100 
-!          write(111,*) tmp(3,:)*0.529177249
-!       end do
-!       close(111)
-
-       DEALLOCATE(pn_pl,high_z) 
+       WRITE(6,*) 
+       WRITE(6,*) "STRESS (ATOMIC) :",SUM(atprop_env%atstress(:,:,:))
+       WRITE(6,*) "STRESS (TOTAL)  :",pvtot
+       CPPostcondition(ABS(pvtot-SUM(atprop_env%atstress(:,:,:)))<ateps,cp_fatal_level,routineP,error,failure)
     END IF
 
   END SUBROUTINE force_env_calc_energy_force
@@ -575,9 +548,9 @@ CONTAINS
       routineP = moduleN//':'//routineN
 
     INTEGER                                  :: stat, stress_tensor
-    LOGICAL                                  :: failure, pv_availability, &
-                                                pv_diagonal, pv_numerical, &
-                                                atomic_energy, atomic_stress
+    LOGICAL                                  :: atomic_energy, atomic_stress, &
+                                                failure, pv_availability, &
+                                                pv_diagonal, pv_numerical
     TYPE(cp_subsys_type), POINTER            :: subsys
 
     failure=.FALSE.

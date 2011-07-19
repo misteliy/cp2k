@@ -80,7 +80,7 @@ CONTAINS
       routineP = moduleN//':'//routineN
 
     INTEGER :: atom_a, atom_b, handle, i, iend, ifirst, igrp, ikind, ilast, &
-      ilist, index, ipair, iparticle, iparticle_local, istart, iunique, &
+      ilist, indexa, ipair, iparticle, iparticle_local, istart, iunique, &
       jkind, junique, mpair, nkinds, nloc_size, npairs, nparticle, &
       nparticle_local, nunique, stat
     INTEGER, DIMENSION(:), POINTER           :: glob_loc_list_a, work_list
@@ -122,12 +122,12 @@ CONTAINS
          nparticle_local = local_particles%n_el(ikind)
          DO iparticle_local=1,nparticle_local
             iparticle = local_particles%list(ikind)%array(iparticle_local)
-            index = INT ( eam_data(iparticle)%rho / eam%drhoar) + 1
-            IF (index > eam%npoints-1) index = eam%npoints-1
-            qr = eam_data(iparticle)%rho  -  eam%rhoval(index)
+            indexa = INT ( eam_data(iparticle)%rho / eam%drhoar) + 1
+            IF (indexa > eam%npoints-1) indexa = eam%npoints-1
+            qr = eam_data(iparticle)%rho  -  eam%rhoval(indexa)
 
-            embed = eam%frho(index) +  qr*eam%frhop(index)
-            fembed (iparticle) = eam%frhop(index) + qr*(eam%frhop(index+1)-eam%frhop(index))/eam%drhoar
+            embed = eam%frho(indexa) +  qr*eam%frhop(indexa)
+            fembed (iparticle) = eam%frhop(indexa) + qr*(eam%frhop(indexa+1)-eam%frhop(indexa))/eam%drhoar
 
             pot_manybody = pot_manybody + embed
          END DO
