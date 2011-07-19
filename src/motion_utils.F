@@ -33,7 +33,7 @@ MODULE motion_utils
   USE particle_list_types,             ONLY: particle_list_type
   USE particle_types,                  ONLY: particle_type,&
                                              write_particle_coordinates
-  USE physcon,                         ONLY: angstrom
+  USE physcon,                         ONLY: angstrom,pascal
   USE timings,                         ONLY: timeset,&
                                              timestop
   USE virial_types,                    ONLY: virial_type
@@ -424,6 +424,7 @@ CONTAINS
     LOGICAL                                  :: new_file
     REAL(KIND=dp), DIMENSION(3, 3)           :: pv_total_bar
     TYPE(cp_logger_type), POINTER            :: logger
+    REAL(KIND=dp)                            :: surface_tension
 
     NULLIFY (logger)
     logger => cp_error_get_logger(error)
@@ -443,8 +444,8 @@ CONTAINS
 
     IF (output_unit > 0) THEN
       IF (new_file) THEN
-        WRITE (UNIT=output_unit,FMT='(A,9(12X,A2," [bar]"),6X,A)')&
-          "#   Step   Time [fs]","xx","xy","xz","yx","yy","yz","zx","zy","zz"
+        WRITE (UNIT=output_unit,FMT='(A,10(12X,A2," [bar]"),6X,A)')&
+          "#   Step   Time [fs]","xx","xy","xz","yx","yy","yz","zx","zy","zz","st"
       END IF
       pv_total_bar(1,1) = cp_unit_from_cp2k(virial%pv_total(1,1)/cell%deth,"bar",error=error)
       pv_total_bar(1,2) = cp_unit_from_cp2k(virial%pv_total(1,2)/cell%deth,"bar",error=error)
@@ -455,10 +456,12 @@ CONTAINS
       pv_total_bar(3,1) = cp_unit_from_cp2k(virial%pv_total(3,1)/cell%deth,"bar",error=error)
       pv_total_bar(3,2) = cp_unit_from_cp2k(virial%pv_total(3,2)/cell%deth,"bar",error=error)
       pv_total_bar(3,3) = cp_unit_from_cp2k(virial%pv_total(3,3)/cell%deth,"bar",error=error)
-      WRITE (UNIT=output_unit,FMT='(I8,F12.3,9(1X,F19.10))') itimes,time,&
+      surface_tension   = 0.5*(pv_total_bar(3,3)-0.5*(pv_total_bar(2,2)+pv_total_bar(1,1)))
+      WRITE (UNIT=output_unit,FMT='(I8,F12.3,10(1X,F19.10))') itimes,time,&
         pv_total_bar(1,1),pv_total_bar(1,2),pv_total_bar(1,3),&
         pv_total_bar(2,1),pv_total_bar(2,2),pv_total_bar(2,3),&
-        pv_total_bar(3,1),pv_total_bar(3,2),pv_total_bar(3,3)
+        pv_total_bar(3,1),pv_total_bar(3,2),pv_total_bar(3,3),&
+        surface_tension
       CALL m_flush(output_unit)
     END IF
 
@@ -518,7 +521,7 @@ CONTAINS
           
       END IF
 
-      WRITE (UNIT=output_unit,FMT=*) virial%pv_profile(:)
+      WRITE (UNIT=output_unit,FMT=*) virial%pv_profile*pascal*1.0E-9_dp  
         
 
       CALL m_flush(output_unit)

@@ -106,7 +106,7 @@ MODULE force_env_methods
   USE particle_list_types,             ONLY: particle_list_p_type,&
                                              particle_list_type
   USE particle_types,                  ONLY: particle_type
-  USE physcon,                         ONLY: debye
+  USE physcon,                         ONLY: debye,pascal,angstrom
   USE qmmm_gpw_energy,                 ONLY: qmmm_el_coupling
   USE qmmm_gpw_forces,                 ONLY: qmmm_forces
   USE qmmm_links_methods,              ONLY: qmmm_added_chrg_coord,&
@@ -180,7 +180,7 @@ CONTAINS
     REAL(kind=dp), DIMENSION(3)              :: grand_total_force, total_force,&
                                                 tmp_coord
     REAL(kind=dp), DIMENSION(:), POINTER     :: pos,histo
-    REAL(kind=dp), DIMENSION(:),ALLOCATABLE  :: pn_pl,high_z
+    REAL(kind=dp), DIMENSION(:),ALLOCATABLE  :: pn_pl,high_z,p_xx,p_yy,p_zz
     TYPE(cell_type), POINTER                 :: cell
     TYPE(cp_logger_type), POINTER            :: logger
     TYPE(atprop_type), POINTER               :: atprop_env
@@ -190,8 +190,9 @@ CONTAINS
     TYPE(particle_list_type), POINTER        :: core_particles, particles, &
                                                 shell_particles
     TYPE(virial_type), POINTER               :: virial
+    TYPE(cp_para_env_type), POINTER          :: para_env
 
-    NULLIFY (logger,results)
+    NULLIFY (logger,results,para_env)
     logger => cp_error_get_logger(error)
     failure = .FALSE.
     eval_ef = .TRUE.
@@ -208,7 +209,7 @@ CONTAINS
        CPPrecondition(force_env%ref_count>0,cp_failure_level,routineP,error,failure)
     END IF
 
-    CALL force_env_get(force_env,virial=virial,error=error)
+    CALL force_env_get(force_env,para_env=para_env,virial=virial,error=error)
     CALL force_env_set(force_env,additional_potential=0.0_dp,error=error)
     IF (virial%pv_availability) CALL zero_virial(virial,reset=.FALSE.)
 
@@ -357,12 +358,16 @@ CONTAINS
 
     !atomic properties
     IF (atprop_env%energy) THEN
-       write(6,*) "ENERGY ",SUM(atprop_env%atener(:))
+	! for parallel version
+        call mp_sum(atprop_env%atener(:),force_env%para_env%group)
+	if (para_env%mepos==0) then
+	 write(6,*) "ENERGY ",SUM(atprop_env%atener(:))
+	end if
     END IF
     IF (atprop_env%stress) THEN
-       allocate(pn_pl(nat),high_z(nat))
+       allocate(pn_pl(nat),high_z(nat),p_xx(nat),p_yy(nat),p_zz(nat))
        histo => virial%pv_profile
-       ! periodic boundary :/ is that necessary?
+       ! periodic boundary to get z-coordinate :/ is that necessary?
        do n = 1,nat
        tmp_coord = pbc(particle_set(n)%r,cell)
             if (tmp_coord(3) .lt. 0) then
@@ -372,28 +377,27 @@ CONTAINS
             end if
        end do
 
-!       call mp_sum(vtprop_env%atstress(:,:,),force_env%para_env%group)
+       call mp_sum(atprop_env%atstress,force_env%para_env%group)
+	p_xx = particle_set(:)%v(1)**2 + (atprop_env%atstress(1,1,:))
+	p_yy = particle_set(:)%v(2)**2 + (atprop_env%atstress(2,2,:))
+	p_zz = particle_set(:)%v(3)**2 + (atprop_env%atstress(3,3,:))
+       pn_pl = (p_zz-0.5_dp*(p_xx+p_yy))*1/(cell%hmat(2,2)*cell%hmat(1,1)*5.29177249e-11**2)*pascal*1.0E-9_dp
+       if (para_env%mepos==0) then
+         pvtot = SUM(virial%pv_virial(:,:))
+         write(6,*) "STRESS ",SUM(atprop_env%atstress(:,:,:)),pvtot
+         write(6,*) "SURFACE TESNION",0.5_dp*(virial%pv_virial(3,3)-0.5_dp* &
+         (virial%pv_virial(1,1)+virial%pv_virial(2,2)))/cell%deth*pascal*1.0E-9_dp
+       end if
 
-       pvtot = SUM(virial%pv_virial(:,:))
-
-       write(6,*) "STRESS ",SUM(atprop_env%atstress(:,:,:)),pvtot
-       pn_pl = (atprop_env%atstress(1,1,:)+atprop_env%atstress(2,2,:))/2-atprop_env%atstress(3,3,:) 
-       
+ 
        ! calculate pressure profile (histogram) 
        do n = 1,nat
-            i = CEILING(high_z(n)*0.529177249)
-!            if (i < 100 ) then
-            histo(i) = histo(i) + pn_pl(n)
-!            endif
+            i = CEILING(high_z(n)*0.529177249_dp)
+            histo(i) = histo(i) + pn_pl(n) 
        end do 
 
-!       open(111,file='test_high', position='append',iostat=st)
-!       do n = 1,100 
-!          write(111,*) tmp(3,:)*0.529177249
-!       end do
-!       close(111)
 
-       DEALLOCATE(pn_pl,high_z) 
+       DEALLOCATE(pn_pl,high_z,p_xx,p_yy,p_zz) 
     END IF
 
   END SUBROUTINE force_env_calc_energy_force
