@@ -79,10 +79,10 @@ CONTAINS
     CHARACTER(len=*), PARAMETER :: routineN = 'force_intra_control', &
       routineP = moduleN//':'//routineN
 
-    LOGICAL                                  :: atener, atstress
     INTEGER :: first_atom, handle, i, ibend, ibond, ikind, imol, imul, &
       index_a, index_b, index_c, index_d, iopbend, ishell, itorsion, nbends, &
       nbonds, nimptors, nkind, nmol_per_kind, nopbends, nshell, ntorsions, nub
+    LOGICAL                                  :: atener, atstress
     REAL(KIND=dp) :: d12, d32, dist, dist1, dist2, energy, fscalar, id12, &
       id32, is32, ism, isn, k2_spring, k4_spring, r2, s32, sm, sn, theta
     REAL(KIND=dp), DIMENSION(3)              :: b12, b32, g1, g2, g3, gt1, &
@@ -90,7 +90,8 @@ CONTAINS
                                                 k4, rij, t12, t32, t34, t41, &
                                                 t42, t43, tm, tn
     REAL(KIND=dp), DIMENSION(:), POINTER     :: ener_a
-    REAL(KIND=dp), DIMENSION(:,:,:), POINTER :: pv_a
+    REAL(KIND=dp), DIMENSION(:, :, :), &
+      POINTER                                :: pv_a
     TYPE(bend_type), POINTER                 :: bend_list( : )
     TYPE(bond_type), POINTER                 :: bond_list( : )
     TYPE(cp_logger_type), POINTER            :: logger
@@ -198,8 +199,7 @@ CONTAINS
              fscalar = k2_spring + k4_spring*r2/6.0_dp
              pot_shell = pot_shell + energy
              IF (atener) THEN
-!               ener_a(index_a) = ener_a(index_a) + 0.5_dp*energy
-!               ener_a(index_b) = ener_a(index_b) + 0.5_dp*energy
+                ener_a(index_b) = ener_a(index_b) + energy
              END IF
              core_particle_set(index_b)%f(1) = core_particle_set(index_b)%f(1) - rij(1)*fscalar
              core_particle_set(index_b)%f(2) = core_particle_set(index_b)%f(2) - rij(2)*fscalar
@@ -211,6 +211,9 @@ CONTAINS
              IF (use_virial) THEN
                 k1 = -rij*fscalar
                 CALL get_pv_bond(k1,rij,pv_bond)
+             END IF
+             IF (atstress) THEN
+               CALL get_pv_bond  ( k1, rij, pv_a(:,:,index_b) )
              END IF
           END DO SHELL
 
@@ -237,6 +240,10 @@ CONTAINS
              ! computing the pressure tensor
              k2 =  - rij * fscalar
              IF (use_virial) CALL get_pv_bond ( k2,rij,pv_urey_bradley )
+             IF (atstress) THEN
+               CALL get_pv_bond  ( 0.5_dp*k2, rij, pv_a(:,:,index_a) )
+               CALL get_pv_bond  ( 0.5_dp*k2, rij, pv_a(:,:,index_b) )
+             END IF
 
              ! the contribution from the ub. ONLY FOR DEBUG
              IF ( PRESENT ( f_ub ) ) THEN
@@ -294,6 +301,13 @@ CONTAINS
              k1 = fscalar*g1
              k3 = fscalar*g3
              IF (use_virial) CALL get_pv_bend(k1,k3,b12,b32,pv_bend)
+             IF (atstress) THEN
+               k1 = fscalar*g1/3._dp
+               k3 = fscalar*g3/3._dp
+               CALL get_pv_bend(k1,k3,b12,b32,pv_a(:,:,index_a))
+               CALL get_pv_bend(k1,k3,b12,b32,pv_a(:,:,index_b))
+               CALL get_pv_bend(k1,k3,b12,b32,pv_a(:,:,index_c))
+             END IF
 
              ! the contribution from the bends. ONLY FOR DEBUG
              IF ( PRESENT ( f_bend)) THEN
@@ -364,6 +378,15 @@ CONTAINS
                 k3 = fscalar*gt3
                 k4 = fscalar*gt4
                 IF (use_virial) CALL get_pv_torsion(k1,k3,k4,t12,t32,t43,pv_torsion)
+                IF (atstress) THEN
+                   k1 = 0.25_dp*fscalar*gt1
+                   k3 = 0.25_dp*fscalar*gt3
+                   k4 = 0.25_dp*fscalar*gt4
+                   CALL get_pv_torsion(k1,k3,k4,t12,t32,t43,pv_a(:,:,index_a))
+                   CALL get_pv_torsion(k1,k3,k4,t12,t32,t43,pv_a(:,:,index_b))
+                   CALL get_pv_torsion(k1,k3,k4,t12,t32,t43,pv_a(:,:,index_c))
+                   CALL get_pv_torsion(k1,k3,k4,t12,t32,t43,pv_a(:,:,index_d))
+                END IF
 
                 ! the contribution from the torsions. ONLY FOR DEBUG
                 IF ( PRESENT ( f_torsion)) THEN
@@ -434,6 +457,15 @@ CONTAINS
              k3 = fscalar*gt3
              k4 = fscalar*gt4
              IF (use_virial) CALL get_pv_torsion(k1,k3,k4,t12,t32,t43,pv_imp_torsion)
+             IF (atstress) THEN
+                k1 = 0.25_dp*fscalar*gt1
+                k3 = 0.25_dp*fscalar*gt3
+                k4 = 0.25_dp*fscalar*gt4
+                CALL get_pv_torsion(k1,k3,k4,t12,t32,t43,pv_a(:,:,index_a))
+                CALL get_pv_torsion(k1,k3,k4,t12,t32,t43,pv_a(:,:,index_b))
+                CALL get_pv_torsion(k1,k3,k4,t12,t32,t43,pv_a(:,:,index_c))
+                CALL get_pv_torsion(k1,k3,k4,t12,t32,t43,pv_a(:,:,index_d))
+             END IF
 
              ! the contribution from the torsions. ONLY FOR DEBUG
              IF ( PRESENT ( f_imptor)) THEN
@@ -505,6 +537,15 @@ CONTAINS
              k4 = fscalar*gt4
 
              IF (use_virial) CALL get_pv_torsion(k1,k3,k4,t12,t32,t43,pv_opbend)
+             IF (atstress) THEN
+                k1 = 0.25_dp*fscalar*gt1
+                k3 = 0.25_dp*fscalar*gt3
+                k4 = 0.25_dp*fscalar*gt4
+                CALL get_pv_torsion(k1,k3,k4,t12,t32,t43,pv_a(:,:,index_a))
+                CALL get_pv_torsion(k1,k3,k4,t12,t32,t43,pv_a(:,:,index_b))
+                CALL get_pv_torsion(k1,k3,k4,t12,t32,t43,pv_a(:,:,index_c))
+                CALL get_pv_torsion(k1,k3,k4,t12,t32,t43,pv_a(:,:,index_d))
+             END IF
 
              ! the contribution from the opbends. ONLY FOR DEBUG
              IF ( PRESENT ( f_opbend)) THEN

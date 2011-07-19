@@ -95,9 +95,9 @@ CONTAINS
     LOGICAL                                  :: all_terms, do_multipoles, &
                                                 failure, full_nl, &
                                                 shell_present
-    REAL(KIND=dp) :: alpha, beta, beta_a, beta_b, energy, fac_ei, fac_kind, &
-      fac_vdw, fscalar, mm_radius_a, mm_radius_b, qcore_a, qcore_b, qeff_a, &
-      qeff_b, qshell_a, qshell_b, rab2, rab2_com, rab2_max, etot
+    REAL(KIND=dp) :: alpha, beta, beta_a, beta_b, energy, etot, fac_ei, &
+      fac_kind, fac_vdw, fscalar, mm_radius_a, mm_radius_b, qcore_a, qcore_b, &
+      qeff_a, qeff_b, qshell_a, qshell_b, rab2, rab2_com, rab2_max
     REAL(KIND=dp), DIMENSION(3)              :: cell_v, cvi, rab, rab_cc, &
                                                 rab_com, rab_cs, rab_sc, &
                                                 rab_ss
@@ -553,7 +553,7 @@ CONTAINS
 ! *****************************************************************************
   SUBROUTINE bonded_correct_gaussian(fist_nonbond_env, atomic_kind_set, &
              local_particles, particle_set, ewald_env, v_bonded_corr, pv_bc, &
-             shell_particle_set, core_particle_set, cell, use_virial, error)
+             shell_particle_set, core_particle_set, atprop_env, cell, use_virial, error)
  
     TYPE(fist_nonbond_env_type), POINTER     :: fist_nonbond_env
     TYPE(atomic_kind_type), POINTER          :: atomic_kind_set( : )
@@ -565,6 +565,7 @@ CONTAINS
       INTENT(OUT)                            :: pv_bc
     TYPE(particle_type), OPTIONAL, POINTER   :: shell_particle_set( : ), &
                                                 core_particle_set( : )
+    TYPE(atprop_type), POINTER               :: atprop_env
     TYPE(cell_type), POINTER                 :: cell
     LOGICAL, INTENT(IN)                      :: use_virial
     TYPE(cp_error_type), INTENT(inout)       :: error
@@ -697,25 +698,25 @@ CONTAINS
                 CALL bonded_correct_gaussian_low(rca, rcb, cell, &
                      v_bonded_corr, core_particle_set, core_particle_set, &
                      shell_a, shell_b, .TRUE., alpha, qcore_a, qcore_b, &
-                     const, fac_cor, pv_bc, use_virial)
+                     const, fac_cor, pv_bc, atprop_env, use_virial)
              ELSE IF (a_is_shell) THEN
                 ! correct for core-ion interaction
                 CALL bonded_correct_gaussian_low(rca, rcb, cell, &
                      v_bonded_corr, core_particle_set, particle_set, &
                      shell_a, atom_b, .TRUE., alpha, qcore_a, qcore_b, &
-                     const, fac_cor, pv_bc, use_virial)
+                     const, fac_cor, pv_bc, atprop_env, use_virial)
              ELSE IF (b_is_shell) THEN
                 ! correct for ion-core interaction
                 CALL bonded_correct_gaussian_low(rca, rcb, cell, &
                      v_bonded_corr, particle_set, core_particle_set, &
                      atom_a, shell_b, .TRUE., alpha, qcore_a, qcore_b, &
-                     const, fac_cor, pv_bc, use_virial)
+                     const, fac_cor, pv_bc, atprop_env, use_virial)
              ELSE
                 ! correct for ion-ion interaction
                 CALL bonded_correct_gaussian_low(rca, rcb, cell, &
                      v_bonded_corr, particle_set, particle_set, &
                      atom_a, atom_b, .TRUE., alpha, qcore_a, qcore_b, &
-                     const, fac_cor, pv_bc, use_virial)
+                     const, fac_cor, pv_bc, atprop_env, use_virial)
              END IF
 
              ! Second part: take care of shell-shell, shell-core/ion and
@@ -725,7 +726,7 @@ CONTAINS
                 CALL bonded_correct_gaussian_low(rsa, rsa, cell, &
                      v_bonded_corr, shell_particle_set, shell_particle_set, &
                      shell_a, shell_b, shell_adiabatic, alpha, qshell_a, &
-                     qshell_b, const, fac_cor, pv_bc, use_virial)
+                     qshell_b, const, fac_cor, pv_bc, atprop_env, use_virial)
              END IF
              IF (a_is_shell) THEN
                 IF (b_is_shell) THEN
@@ -733,13 +734,13 @@ CONTAINS
                    CALL bonded_correct_gaussian_low(rsa, rcb, cell, &
                         v_bonded_corr, shell_particle_set, core_particle_set, &
                         shell_a, shell_b, shell_adiabatic, alpha, qshell_a, qcore_b, &
-                        const, fac_cor, pv_bc, use_virial)
+                        const, fac_cor, pv_bc, atprop_env, use_virial)
                 ELSE
                    ! correct for shell-ion interaction
                    CALL bonded_correct_gaussian_low(rsa, rcb, cell, &
                         v_bonded_corr, shell_particle_set, particle_set, &
                         shell_a, atom_b, shell_adiabatic, alpha, qshell_a, qcore_b, &
-                        const, fac_cor, pv_bc,use_virial)
+                        const, fac_cor, pv_bc,atprop_env, use_virial)
                 END IF
              END IF
              IF (b_is_shell) THEN
@@ -748,13 +749,13 @@ CONTAINS
                    CALL bonded_correct_gaussian_low(rca, rsb, cell, &
                         v_bonded_corr, core_particle_set, shell_particle_set, &
                         shell_a, shell_b, shell_adiabatic, alpha, qcore_a, qshell_b, &
-                        const, fac_cor, pv_bc, use_virial)
+                        const, fac_cor, pv_bc, atprop_env, use_virial)
                 ELSE
                    ! correct for ion-shell interaction
                    CALL bonded_correct_gaussian_low(rca, rsb, cell, &
                         v_bonded_corr, particle_set, shell_particle_set, &
                         atom_a, shell_b, shell_adiabatic, alpha, qcore_a, qshell_b, &
-                        const, fac_cor, pv_bc, use_virial)
+                        const, fac_cor, pv_bc, atprop_env, use_virial)
                 END IF
              END IF
           END DO Pairs
@@ -803,7 +804,7 @@ CONTAINS
 ! *****************************************************************************
   SUBROUTINE bonded_correct_gaussian_low(r1, r2, cell, v_bonded_corr,&
        particle_set1, particle_set2, i, j, shell_adiabatic, alpha, q1, q2, &
-       const, fac_cor, pv_bc, use_virial)
+       const, fac_cor, pv_bc, atprop_env, use_virial)
     REAL(KIND=dp), DIMENSION(3)              :: r1, r2
     TYPE(cell_type), POINTER                 :: cell
     REAL(KIND=dp), INTENT(INOUT)             :: v_bonded_corr
@@ -813,6 +814,7 @@ CONTAINS
     LOGICAL, INTENT(IN)                      :: shell_adiabatic
     REAL(KIND=dp), INTENT(IN)                :: alpha, q1, q2, const, fac_cor
     REAL(KIND=dp), INTENT(INOUT)             :: pv_bc(3,3)
+    TYPE(atprop_type), POINTER               :: atprop_env
     LOGICAL, INTENT(IN)                      :: use_virial
 
     CHARACTER(LEN=*), PARAMETER :: routineN = 'bonded_correct_gaussian_low', &
@@ -840,6 +842,10 @@ CONTAINS
 
     ! Getting the potential
     v_bonded_corr = v_bonded_corr - q1*q2*idij*errf*fac_cor
+    IF (atprop_env%energy) THEN
+       atprop_env%atener(i) = atprop_env%atener(i) - 0.5_dp*q1*q2*idij*errf*fac_cor
+       atprop_env%atener(j) = atprop_env%atener(j) - 0.5_dp*q1*q2*idij*errf*fac_cor
+    END IF
 
     ! Subtracting the force from the total force
     fscalar = q1 * q2 * idij**2 * (idij*errf-const*e_arg_arg)*fac_cor
