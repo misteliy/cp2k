@@ -1,0 +1,15 @@
+#module load PrgEnv-gnu ; module load xt-libsci ; module load fftw ; make -j 16 ARCH=CRAY-XE6-gfortran VERSION=popt
+CC       = cc
+CPP      =
+FC       = ftn
+LD       = ftn
+AR       = ar -r
+CFLAGS   =
+CPPFLAGS =
+DFLAGS   = -D__GFORTRAN -D__FFTSG -D__LIBINT -D__parallel -D__SCALAPACK -D__BLACS -D__FFTW3 -D__MAX_CONTR=3 -D__HAS_NO_GETLOG -D__USE_CP2K_TRACE -D__STATM_RESIDENT -D__HAS_smm_dnn -D__HAS_smm_snn
+FCFLAGS  = -g -O2 -march=native -ffast-math -ftree-vectorize -ffree-form $(DFLAGS) -ffree-line-length-none
+LDFLAGS  = $(FCFLAGS)
+LIBS     = timings_mp.o -L/users/vondele/libsmm/ -lsmm_dnn_palu -lsmm_snn_palu -L/users/vondele/rosa/cp2k/libint/lib/ -lderiv -lint -lstdc++ 
+
+OBJECTS_ARCHITECTURE = machine_gfortran.o
+
