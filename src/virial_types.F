@@ -34,6 +34,7 @@ MODULE virial_types
                                            pv_calculate,&
                                            pv_numer,&
                                            pv_diagonal
+    REAL (KIND=dp), DIMENSION (:),ALLOCATABLE  :: pv_profile
   END TYPE virial_type
 
 ! *****************************************************************************
@@ -118,13 +119,14 @@ CONTAINS
 
     my_reset = .TRUE.
     IF (PRESENT(reset)) my_reset = reset
-
+    allocate(virial%pv_profile(100))
     virial % pv_total = 0.0_dp 
     virial % pv_kinetic = 0.0_dp 
     virial % pv_virial = 0.0_dp 
     virial % pv_xc = 0.0_dp 
     virial % pv_fock_4c = 0.0_dp 
     virial % pv_constraint = 0.0_dp 
+    virial % pv_profile = 0.0_dp
     IF ( my_reset ) THEN
        virial % pv_availability = .FALSE.
        virial % pv_numer = .FALSE.

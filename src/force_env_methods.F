@@ -24,7 +24,8 @@ MODULE force_env_methods
                                              compare_cells,&
                                              init_cell,&
                                              real_to_scaled,&
-                                             scaled_to_real
+                                             scaled_to_real, &
+                                             pbc
   USE constraint_fxd,                  ONLY: fix_atom_control
   USE constraint_vsite,                ONLY: vsite_force_control
   USE cp_iter_types,                   ONLY: cp_iteration_info_copy_iter
@@ -172,22 +173,26 @@ CONTAINS
       routineP = moduleN//':'//routineN
 
     INTEGER                                  :: nat, ndigits, output_unit, &
-                                                print_forces, stat
+                                                print_forces, stat,n,st,i
     LOGICAL                                  :: calculate_forces, &
                                                 energy_consistency, eval_ef, &
                                                 failure, my_skip
     REAL(kind=dp)                            :: e_pot, pvtot
     REAL(kind=dp), PARAMETER                 :: ateps=1.e-3_dp 
-    REAL(kind=dp), DIMENSION(3)              :: grand_total_force, total_force
-    REAL(kind=dp), DIMENSION(:), POINTER     :: pos
+    REAL(kind=dp), DIMENSION(3)              :: grand_total_force, total_force, &
+                                                tmp_coord
+    REAL(kind=dp), DIMENSION(:), POINTER     :: pos, histo
+    REAL(kind=dp), DIMENSION(:), ALLOCATABLE    :: pn_pl,high_z
     TYPE(atprop_type), POINTER               :: atprop_env
     TYPE(cell_type), POINTER                 :: cell
     TYPE(cp_logger_type), POINTER            :: logger
     TYPE(cp_result_type), POINTER            :: results
     TYPE(cp_subsys_type), POINTER            :: subsys
+    TYPE(particle_type), POINTER             :: particle_set(:)
     TYPE(particle_list_type), POINTER        :: core_particles, particles, &
                                                 shell_particles
     TYPE(virial_type), POINTER               :: virial
+    TYPE(cp_para_env_type), POINTER          :: para_env
 
     NULLIFY (logger,results)
     logger => cp_error_get_logger(error)
@@ -206,7 +211,8 @@ CONTAINS
        CPPrecondition(force_env%ref_count>0,cp_failure_level,routineP,error,failure)
     END IF
 
-    CALL force_env_get(force_env,virial=virial,error=error)
+    CALL force_env_get(force_env,para_env=para_env,virial=virial, &
+         atprop_env=atprop_env,error=error)
     CALL force_env_set(force_env,additional_potential=0.0_dp,error=error)
     IF (virial%pv_availability) CALL zero_virial(virial,reset=.FALSE.)
 
@@ -355,20 +361,43 @@ CONTAINS
 
     !atomic properties
     IF (atprop_env%energy) THEN
+       allocate(pn_pl(nat),high_z(nat))
+       histo => virial%pv_profile
+
+    !periodic boundary :/ is that necessary?
+       do n = 1,nat
+       tmp_coord = pbc(particle_set(n)%r,cell)
+            if (tmp_coord(3) .lt. 0) then
+                high_z(n) = cell%hmat(3,3) + tmp_coord(3)
+            else
+                high_z(n) = tmp_coord(3)
+            end if
+       end do
+
+       CALL mp_sum(atprop_env%atener,force_env%para_env%group)
        CALL force_env_get(force_env, potential_energy=e_pot, error=error)
+	if (para_env%mepos==0) then
        WRITE(6,*) 
        WRITE(6,*) "ENERGY (ATOMIC) :",SUM(atprop_env%atener(:))
        WRITE(6,*) "ENERGY (TOTAL)  :",e_pot
        CPPostcondition(ABS(e_pot-SUM(atprop_env%atener(:)))<ateps,cp_fatal_level,routineP,error,failure)
+	end if
     END IF
     IF (atprop_env%stress) THEN
+	call mp_sum(atprop_env%atstress,force_env%para_env%group)
+	if (para_env%mepos==0) then
        pvtot = SUM(virial%pv_virial(:,:))
        WRITE(6,*) 
        WRITE(6,*) "STRESS (ATOMIC) :",SUM(atprop_env%atstress(:,:,:))
        WRITE(6,*) "STRESS (TOTAL)  :",pvtot
        CPPostcondition(ABS(pvtot-SUM(atprop_env%atstress(:,:,:)))<ateps,cp_fatal_level,routineP,error,failure)
+	end if
     END IF
-
+       ! calculate pressure profile (histogram) 
+       do n = 1,nat
+            i = CEILING(high_z(n)*0.529177249)
+            histo(i) = histo(i) + pn_pl(n)
+       end do 
   END SUBROUTINE force_env_calc_energy_force
 
 ! *****************************************************************************
