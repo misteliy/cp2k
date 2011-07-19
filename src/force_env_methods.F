@@ -25,6 +25,7 @@ MODULE force_env_methods
                                              init_cell,&
                                              real_to_scaled,&
                                              scaled_to_real, &
+                                             get_cell, &
                                              pbc
   USE constraint_fxd,                  ONLY: fix_atom_control
   USE constraint_vsite,                ONLY: vsite_force_control
@@ -105,7 +106,8 @@ MODULE force_env_methods
                                              mixed_map_forces
   USE particle_list_types,             ONLY: particle_list_p_type,&
                                              particle_list_type
-  USE particle_types,                  ONLY: particle_type
+  USE particle_types,                  ONLY: particle_type,&
+                                             get_particle_set
   USE physcon,                         ONLY: debye
   USE qmmm_gpw_energy,                 ONLY: qmmm_el_coupling
   USE qmmm_gpw_forces,                 ONLY: qmmm_forces
@@ -188,11 +190,14 @@ CONTAINS
     TYPE(cp_logger_type), POINTER            :: logger
     TYPE(cp_result_type), POINTER            :: results
     TYPE(cp_subsys_type), POINTER            :: subsys
-    TYPE(particle_type), POINTER             :: particle_set(:)
+    TYPE(particle_type), DIMENSION(:), &
+    POINTER                                  :: particle_set
     TYPE(particle_list_type), POINTER        :: core_particles, particles, &
                                                 shell_particles
     TYPE(virial_type), POINTER               :: virial
     TYPE(cp_para_env_type), POINTER          :: para_env
+    REAL(KIND=dp), DIMENSION(1:3)            :: abc
+    INTEGER, ALLOCATABLE, DIMENSION(:)       :: first_sgf, last_sgf
 
     NULLIFY (logger,results)
     logger => cp_error_get_logger(error)
@@ -211,7 +216,7 @@ CONTAINS
        CPPrecondition(force_env%ref_count>0,cp_failure_level,routineP,error,failure)
     END IF
 
-    CALL force_env_get(force_env,para_env=para_env,virial=virial, &
+    CALL force_env_get(force_env,virial=virial, &
          atprop_env=atprop_env,error=error)
     CALL force_env_set(force_env,additional_potential=0.0_dp,error=error)
     IF (virial%pv_availability) CALL zero_virial(virial,reset=.FALSE.)
@@ -227,7 +232,7 @@ CONTAINS
           CASE ( use_fist_force )
              CALL fist_force_control( force_env%fist_env, virial, atprop_env, force_env%para_env, &
                   force_env_section=force_env%force_env_section, error=error)
-             CALL fist_env_get(fist_env=force_env%fist_env,results=results,error=error)
+             CALL fist_env_get(fist_env=force_env%fist_env,particle_set=particle_set,results=results,error=error)
           CASE (use_ep_force)
              CALL ep_env_calc_e_f(force_env%ep_env,calculate_forces,error=error)
           CASE ( use_qs_force )
@@ -363,8 +368,8 @@ CONTAINS
     IF (atprop_env%energy) THEN
        allocate(pn_pl(nat),high_z(nat))
        histo => virial%pv_profile
-
-    !periodic boundary :/ is that necessary?
+    !periodic boundary :/ is that necessary? or easier way?
+       CALL get_cell (cell, abc=abc)
        do n = 1,nat
        tmp_coord = pbc(particle_set(n)%r,cell)
             if (tmp_coord(3) .lt. 0) then
@@ -373,9 +378,9 @@ CONTAINS
                 high_z(n) = tmp_coord(3)
             end if
        end do
-
+       CALL force_env_get(force_env, para_env=para_env,potential_energy=e_pot, error=error)
        CALL mp_sum(atprop_env%atener,force_env%para_env%group)
-       CALL force_env_get(force_env, potential_energy=e_pot, error=error)
+	print *,"test"
 	if (para_env%mepos==0) then
        WRITE(6,*) 
        WRITE(6,*) "ENERGY (ATOMIC) :",SUM(atprop_env%atener(:))
