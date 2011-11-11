@@ -1,24 +1,56 @@
-/C11H24.inp/1.9/Tue Nov 25 10:57:37 2008//
-/H2O-32_NPT.inp/1.10/Tue Nov 25 10:57:37 2008//
-/H2O-32_PME.inp/1.10/Tue Nov 25 10:57:37 2008//
-/H2O-32_SPME.inp/1.10/Tue Nov 25 10:57:37 2008//
-/H2O-32_ewald.inp/1.10/Tue Nov 25 10:57:37 2008//
-/aala.inp/1.8/Tue Nov 25 10:57:37 2008//
-/al2o3.inp/1.10/Tue Nov 25 10:57:37 2008//
-/al2o3_rhombo.inp/1.9/Tue Nov 25 10:57:37 2008//
-/argon.inp/1.12/Tue Nov 25 10:57:37 2008//
-/argon_npt.inp/1.9/Tue Nov 25 10:57:37 2008//
-/butane.inp/1.9/Tue Nov 25 10:57:37 2008//
-/deca_ala.inp/1.14/Tue Nov 25 10:57:37 2008//
-/ethene.inp/1.10/Tue Nov 25 10:57:37 2008//
-/glyala_wat.inp/1.8/Tue Nov 25 10:57:37 2008//
-/pot_input.inp/1.7/Tue Nov 25 10:57:37 2008//
-/tidy/1.1/Wed May 10 10:45:42 2006//
-/water.inp/1.15/Tue Nov 25 10:57:37 2008//
-/water3.inp/1.11/Tue Nov 25 10:57:37 2008//
-/water512.inp/1.12/Tue Nov 25 10:57:37 2008//
-/water8192.inp/1.14/Tue Nov 25 10:57:37 2008//
-/water_1.inp/1.10/Tue Nov 25 10:57:37 2008//
-/water_2.inp/1.10/Tue Nov 25 10:57:37 2008//
-/water_IPBV.inp/1.13/Tue Nov 25 10:57:37 2008//
-D
+D/Al2O3_solid////
+D/Argon////
+D/EAM_LIB////
+D/Propane////
+D/Water////
+D/regtest////
+D/regtest-10////
+D/regtest-11////
+D/regtest-12////
+D/regtest-13////
+D/regtest-14////
+D/regtest-15////
+D/regtest-2////
+D/regtest-3////
+D/regtest-4////
+D/regtest-5////
+D/regtest-6////
+D/regtest-7////
+D/regtest-8////
+D/regtest-9////
+D/regtest-ei14////
+D/regtest-excl-G////
+D/regtest-excl-R////
+D/regtest-gauss////
+D/regtest-pol////
+D/sample_cp2k////
+D/sample_crd////
+D/sample_pdb////
+D/sample_pot////
+D/sample_psf////
+D/sample_top////
+D/sample_xyz////
+D/tip4p_debugging_joost////
+/C11H24.inp/1.9/Tue Jul 12 13:43:28 2011//
+/H2O-32_NPT.inp/1.10/Tue Jul 12 13:43:28 2011//
+/H2O-32_PME.inp/1.10/Tue Jul 12 13:43:28 2011//
+/H2O-32_SPME.inp/1.10/Tue Jul 12 13:43:28 2011//
+/H2O-32_ewald.inp/1.10/Tue Jul 12 13:43:28 2011//
+/aala.inp/1.8/Tue Jul 12 13:43:29 2011//
+/al2o3.inp/1.10/Tue Jul 12 13:43:29 2011//
+/al2o3_rhombo.inp/1.9/Tue Jul 12 13:43:29 2011//
+/argon.inp/1.12/Tue Jul 12 13:43:29 2011//
+/argon_npt.inp/1.9/Tue Jul 12 13:43:29 2011//
+/butane.inp/1.9/Tue Jul 12 13:43:29 2011//
+/deca_ala.inp/1.14/Tue Jul 12 13:43:29 2011//
+/ethene.inp/1.10/Tue Jul 12 13:43:29 2011//
+/glyala_wat.inp/1.8/Tue Jul 12 13:43:29 2011//
+/pot_input.inp/1.7/Tue Jul 12 13:43:29 2011//
+/tidy/1.1/Tue Jul 12 13:43:38 2011//
+/water.inp/1.15/Tue Jul 12 13:43:38 2011//
+/water3.inp/1.11/Tue Jul 12 13:43:38 2011//
+/water512.inp/1.12/Tue Jul 12 13:43:38 2011//
+/water8192.inp/1.14/Tue Jul 12 13:43:38 2011//
+/water_1.inp/1.10/Tue Jul 12 13:43:38 2011//
+/water_2.inp/1.10/Tue Jul 12 13:43:38 2011//
+/water_IPBV.inp/1.13/Tue Jul 12 13:43:38 2011//

@@ -1,12 +1,12 @@
-/CP2KCalculator.py/1.1/Thu Nov 18 12:44:29 2004//
-/compile/1.2/Tue May 10 13:58:07 2005//
-/cp2k_c_bridge.c/1.2/Tue May 10 13:58:07 2005//
-/cp2k_c_bridge.h/1.2/Tue May 10 13:58:07 2005//
-/cp2k_interface.c/1.2/Tue May 10 13:58:07 2005//
-/cp2k_interface.py/1.1/Tue May 10 13:58:07 2005//
-/ex.py/1.1/Thu Nov 18 12:44:29 2004//
-/f77_high.f90/1.1/Wed May 11 09:26:12 2005//
-/input.inp/1.1/Wed May 11 09:30:16 2005//
-/setup.py/1.2/Tue May 10 13:58:07 2005//
-/test.c/1.1/Thu Nov 18 12:44:29 2004//
+/CP2KCalculator.py/1.1/Tue Jul 12 13:44:22 2011//
+/compile/1.2/Tue Jul 12 13:44:22 2011//
+/cp2k_c_bridge.c/1.2/Tue Jul 12 13:44:22 2011//
+/cp2k_c_bridge.h/1.2/Tue Jul 12 13:44:23 2011//
+/cp2k_interface.c/1.2/Tue Jul 12 13:44:23 2011//
+/cp2k_interface.py/1.1/Tue Jul 12 13:44:23 2011//
+/ex.py/1.1/Tue Jul 12 13:44:23 2011//
+/f77_high.f90/1.1/Tue Jul 12 13:44:23 2011//
+/input.inp/1.1/Tue Jul 12 13:44:23 2011//
+/setup.py/1.2/Tue Jul 12 13:44:23 2011//
+/test.c/1.1/Tue Jul 12 13:44:23 2011//
 D

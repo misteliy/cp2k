@@ -1,4 +1,12 @@
-/COPYRIGHT/1.8/Fri Dec 31 16:03:46 2010//
-/INSTALL/1.27/Thu May 12 07:29:53 2011//
-/README/1.6/Mon Jan 28 10:29:08 2008//
-D
+D/arch////
+D/cuda_tools////
+D/doc////
+D/libint_tools////
+D/makefiles////
+D/src////
+D/tests////
+D/tools////
+D/web////
+/COPYRIGHT/1.8/Tue Jul 12 13:43:00 2011//
+/INSTALL/1.28/Result of merge//
+/README/1.6/Tue Jul 12 13:43:01 2011//

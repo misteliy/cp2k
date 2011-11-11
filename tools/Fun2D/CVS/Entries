@@ -1,14 +1,14 @@
-/Makefile/1.4/Wed Dec 17 11:44:07 2008//
-/README/1.1/Tue Dec  9 11:11:43 2008//
-/drvrec_mpfr.f90/1.4/Wed Dec 17 11:44:07 2008//
-/evalf.f90/1.2/Wed Dec 17 11:44:07 2008//
-/function_types.f90/1.1/Wed Dec 17 11:44:07 2008//
-/functions.f90/1.1/Wed Dec 17 11:44:07 2008//
-/kinds.f90/1.1/Tue Dec  9 11:11:43 2008//
-/mpfr.f90/1.1/Tue Dec  9 11:11:43 2008//
-/mpfr_cutoff_gamma.f90/1.1/Tue Dec  9 11:11:43 2008//
-/mpfr_yukawa.f90/1.1/Wed Dec 17 11:44:07 2008//
-/padua2_mpfr.f90/1.1/Tue Dec  9 11:11:43 2008//
-/recurse.f90/1.5/Wed Dec 31 11:16:38 2008//
-/tester.f90/1.2/Wed Dec 17 11:44:07 2008//
+/Makefile/1.4/Tue Jul 12 13:44:23 2011//
+/README/1.1/Tue Jul 12 13:44:23 2011//
+/drvrec_mpfr.f90/1.4/Tue Jul 12 13:44:23 2011//
+/evalf.f90/1.2/Tue Jul 12 13:44:23 2011//
+/function_types.f90/1.1/Tue Jul 12 13:44:23 2011//
+/functions.f90/1.1/Tue Jul 12 13:44:23 2011//
+/kinds.f90/1.1/Tue Jul 12 13:44:23 2011//
+/mpfr.f90/1.1/Tue Jul 12 13:44:23 2011//
+/mpfr_cutoff_gamma.f90/1.1/Tue Jul 12 13:44:23 2011//
+/mpfr_yukawa.f90/1.1/Tue Jul 12 13:44:23 2011//
+/padua2_mpfr.f90/1.1/Tue Jul 12 13:44:23 2011//
+/recurse.f90/1.5/Tue Jul 12 13:44:23 2011//
+/tester.f90/1.2/Tue Jul 12 13:44:23 2011//
 D

@@ -791,3 +791,15 @@ D/fft_lib////
 /force_fields_input.F/1.78/Tue Jul 19 07:25:19 2011//
 /input_cp2k_mm.F/1.116/Tue Jul 19 07:25:19 2011//
 /pair_potential.F/1.120/Tue Jul 19 07:25:19 2011//
+/cp_ma_interface.F/1.5/Fri Oct  7 11:30:56 2011//
+/input_cp2k_mp2.F/1.1/Tue Oct 25 09:59:36 2011//
+/mp2.F/1.1/Tue Oct 25 09:59:37 2011//
+/mp2_direct_method.F/1.1/Tue Oct 25 09:59:37 2011//
+/mp2_setup.F/1.1/Tue Oct 25 09:59:37 2011//
+/mp2_types.F/1.1/Tue Oct 25 09:59:37 2011//
+/rtp_admm_methods.F/1.1/Thu Sep 15 14:29:21 2011//
+/t_sh_p_s_c.F/1.1/Tue Oct 25 09:59:37 2011//
+/tamc_run.F/1.3/Sat Oct 22 10:54:55 2011//
+/wannier_states.F/1.3/Tue Oct 18 13:21:54 2011//
+/wannier_states_types.F/1.1/Tue Oct 18 13:21:54 2011//
+D/arch_lib////

@@ -1,19 +1,81 @@
-/ALL_BASIS_SETS/1.2/Tue Sep 29 08:43:04 2009//
-/BASIS_ADMM/1.1/Mon Jun  7 08:37:11 2010//
-/BASIS_GEMINAL/1.2/Thu Jul  9 07:16:48 2009//
-/BASIS_MOLOPT/1.15/Thu Dec  3 10:54:05 2009//
-/BASIS_SET/1.14/Mon Aug 11 12:24:30 2008//
-/BASIS_ZIJLSTRA/1.2/Fri Jan  9 08:31:35 2009//
-/C.inp/1.11/Mon Mar 16 16:06:00 2009//
-/EMSL_BASIS_SETS/1.11/Wed Nov 25 12:27:25 2009//
-/GTH_BASIS_SETS/1.5/Thu Oct 25 19:40:21 2007//
-/GTH_POTENTIALS/1.16/Mon Mar 14 09:17:47 2011//
-/MM_POTENTIAL/1.2/Wed Sep 15 15:13:52 2004//
-/OT_BASIS/1.1/Fri Jan 24 18:29:11 2003//
-/POTENTIAL/1.18/Fri Jun 12 11:24:05 2009//
-/TEST_FILES/1.3/Mon Sep 18 08:09:12 2006//
-/TEST_FILES_RESET/1.7/Wed Jan 28 09:07:18 2009//
-/dftd3.dat/1.1/Wed May 26 11:14:36 2010//
-/t_c_g.dat/1.1/Thu Dec 11 16:09:16 2008//
-/tidy/1.5/Tue Feb  7 13:36:04 2006//
-D
+D/benchmark////
+D/benchmark_HFX////
+D/benchmark_ot_ls////
+D/benchmark_rubri////
+D/regtest////
+D/regtest-admm////
+D/regtest-all-electron////
+D/regtest-bs////
+D/regtest-chi-1////
+D/regtest-dft-vdw-corr////
+D/regtest-dkh////
+D/regtest-dm-ls-scf////
+D/regtest-epr-1////
+D/regtest-epr-2////
+D/regtest-gapw////
+D/regtest-gapw-1////
+D/regtest-gapw-2////
+D/regtest-gapw-3////
+D/regtest-gapw-4////
+D/regtest-gpw////
+D/regtest-gpw-1////
+D/regtest-gpw-2////
+D/regtest-gpw-3////
+D/regtest-gpw-4////
+D/regtest-gpw-5////
+D/regtest-gpw-6////
+D/regtest-hfx////
+D/regtest-hfx-periodic////
+D/regtest-hfx-stress////
+D/regtest-hfx-wfn-fitting////
+D/regtest-hole-funct////
+D/regtest-hybrid////
+D/regtest-linearscaling////
+D/regtest-lsroks////
+D/regtest-md-extrap////
+D/regtest-meta////
+D/regtest-nmr-1////
+D/regtest-nmr-2////
+D/regtest-nmr-3////
+D/regtest-nmr-4////
+D/regtest-nmr-5////
+D/regtest-nmr-6////
+D/regtest-nmr-uks-1////
+D/regtest-nonortho////
+D/regtest-ot////
+D/regtest-ot-1////
+D/regtest-ot-2////
+D/regtest-ot-3////
+D/regtest-ot-refine////
+D/regtest-ot-refine-2////
+D/regtest-ot-refine-3////
+D/regtest-p-efield////
+D/regtest-plus_u////
+D/regtest-rtp////
+D/regtest-spin-spin-1////
+D/regtest-stress////
+D/regtest-sym////
+D/regtest-tddfpt////
+D/sample_pdb////
+D/sample_xyz////
+D/test_outputs////
+D/untested_inputs////
+/ALL_BASIS_SETS/1.2/Tue Jul 12 13:43:42 2011//
+/BASIS_ADMM/1.1/Tue Jul 12 13:43:42 2011//
+/BASIS_GEMINAL/1.2/Tue Jul 12 13:43:42 2011//
+/BASIS_MOLOPT/1.15/Tue Jul 12 13:43:42 2011//
+/BASIS_SET/1.14/Tue Jul 12 13:43:42 2011//
+/BASIS_ZIJLSTRA/1.2/Tue Jul 12 13:43:42 2011//
+/C.inp/1.11/Tue Jul 12 13:43:42 2011//
+/EMSL_BASIS_SETS/1.11/Tue Jul 12 13:43:42 2011//
+/GTH_BASIS_SETS/1.5/Tue Jul 12 13:43:42 2011//
+/GTH_POTENTIALS/1.16/Tue Jul 12 13:43:42 2011//
+/MM_POTENTIAL/1.2/Tue Jul 12 13:43:42 2011//
+/OT_BASIS/1.1/Tue Jul 12 13:43:42 2011//
+/POTENTIAL/1.18/Tue Jul 12 13:43:42 2011//
+/TEST_FILES/1.3/Tue Jul 12 13:43:42 2011//
+/TEST_FILES_RESET/1.7/Tue Jul 12 13:43:42 2011//
+/dftd3.dat/1.1/Tue Jul 12 13:43:45 2011//
+/t_c_g.dat/1.1/Tue Jul 12 13:44:19 2011//
+/t_sh_p_s_c.dat/1.1/Tue Oct 25 09:59:37 2011//
+/tidy/1.5/Tue Jul 12 13:44:19 2011//
