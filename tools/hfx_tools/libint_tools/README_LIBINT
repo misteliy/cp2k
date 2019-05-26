@@ -6,7 +6,7 @@ How to compile and link Libint
 ---------------
 
 The HFX modules in cp2k interface the C++ library Libint in order to calculate
-the four center electron repulsion integrals. I you want to use that part of
+the four center electron repulsion integrals. If you want to use that part of
 the code, you have to compile and link in these libraries (libint.a and 
 libderiv.a). 
 
